@@ -81,11 +81,10 @@
                     </li>
                     <h3 class="menu-title">Blog</h3><!-- /.menu-title -->
                     <li class="menu-item-has-children dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-glass"></i>Pages</a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon ti-clipboard"></i>Entradas</a>
                         <ul class="sub-menu children dropdown-menu">
-                            <li><i class="menu-icon fa fa-sign-in"></i><a href="page-login.html">Login</a></li>
-                            <li><i class="menu-icon fa fa-sign-in"></i><a href="page-register.html">Register</a></li>
-                            <li><i class="menu-icon fa fa-paper-plane"></i><a href="pages-forget.html">Forget Pass</a></li>
+                            <li><i class="menu-icon ti-write"></i><a href="<?= base_url()?>blog/nueva_entrada">Crear</a></li>
+                            <li><i class="menu-icon ti-view-list"></i><a href="<?= base_url()?>blog/lista">Listado</a></li>
                         </ul>
                     </li>
                 </ul>

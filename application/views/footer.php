@@ -11,5 +11,11 @@
     <!-- <script src="<?= base_url()?>plantillas/js/lib/chart-js/Chart.bundle.js"></script> -->
     <!-- <script src="<?= base_url()?>plantillas/js/dashboard.js"></script> -->
     <!-- <script src="<?= base_url()?>plantillas/js/widgets.js"></script> -->
+
+    <?php
+        if(isset($script)) {
+            $this->load->view($script);
+        }
+    ?>
 </body>
 </html>
