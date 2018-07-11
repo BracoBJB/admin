@@ -119,6 +119,23 @@ class Consultas extends CI_Model
 	// 	echo $sql;
 	// 	echo $q;
 	// }
+
+	public function exist_titulo($titulo) {
+		$this->db->select('titulo')->where('titulo',$titulo);
+		$consulta = $this->db->get('entrada');
+
+		return $consulta->num_rows() > 0;
+	}
+	public function exist_enlace($enlace) {
+		$this->db->select('enlace')->where('enlace',$enlace);
+		$consulta = $this->db->get('entrada');
+
+		return $consulta->num_rows() > 0;
+	}
+	//Inserta un array asociativo en la bd
+	public function insertArray($table,$data_array) {
+		$this->db->insert($table, $data_array);
+	}
 }
 
 
