@@ -60,7 +60,6 @@
                             <div class="form-group">
                                 <label for="editor1" class="form-control-label">Contenido</label>
                                 <textarea name="editor1" id="editor1" rows="10" cols="80">
-                                Por favor escriba aquí el contenido del post
                                 </textarea>
                             </div>
                             <div class="form-group">

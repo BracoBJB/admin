@@ -86,7 +86,7 @@ class Blog extends CI_Controller
 				'titulo' => $titulo,
 				'contenido' => $this->input->post('editor1'),
 				'semestre' => $this->input->post('semestre'),
-				'etiquetas' => $this->input->post('tema'),
+				'tema' => $this->input->post('tema'),
 				'enlace' => $enlace,
 				'fecha' => $fecha,
 				'borrador' => FALSE,
@@ -101,6 +101,13 @@ class Blog extends CI_Controller
         	$this->load->view("preview_post"); 	
 			$this->load->view("footer");
 		}
+	}
+
+	public function editar_entrada($id_entrada) {
+		$this->load->view("head",$data);
+		$this->load->view("nav");
+		echo $id_entrada;
+		$this->load->view("footer");
 	}
 
 	public function data_submitted() {
@@ -142,6 +149,9 @@ class Blog extends CI_Controller
 		$data["user"] = $this->session->userdata('username');;
 
 		$data["titulo"] = "Lista de entradas";
+		$data["header_links"] = "list_post_header";
+		$data["script"] = "list_post_script";
+		$data["entradas"] =  $this->consultas->get_list_post();
 
 		$this->load->view("head",$data);
 		$this->load->view("nav");
@@ -149,11 +159,11 @@ class Blog extends CI_Controller
 		$this->load->view("footer");
 	}
 
-	public function check_titulo($titulo) {
-
-		$result = $this->consultas->exist_titulo($titulo);
+	public function check_enlace($titulo) {
+		$enlace = url_title(convert_accented_characters($titulo),'-',TRUE);
+		$result = $this->consultas->exist_enlace($enlace);
 		if($result) {
-			$this->form_validation->set_message('check_titulo','El titulo '.$titulo.' ya esta registrado.') ;
+			$this->form_validation->set_message('check_enlace','El titulo '.$titulo.' ya esta registrado.') ;
 			return FALSE;
 		} else {
 			return TRUE;

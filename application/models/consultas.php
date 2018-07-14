@@ -136,9 +136,13 @@ class Consultas extends CI_Model
 	public function insertArray($table,$data_array) {
 		$this->db->insert($table, $data_array);
 	}
+
+	public function get_list_post() {
+		$this->db->order_by("fecha", "desc");
+		$query = $this->db->get('entrada'); 
+
+		return $query->result();
+	}
 }
-
-
-
 
 ?>

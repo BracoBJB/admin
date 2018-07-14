@@ -1,0 +1,1 @@
+<link rel="stylesheet" href="<?=base_url();?>plantillas/css/lib/datatable/dataTables.bootstrap.min.css">

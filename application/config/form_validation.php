@@ -6,7 +6,7 @@ $config['blog/validar'] = array(
     array(
         'field' => 'titulo',
         'label' => 'Titulo del Post',
-        'rules' => 'trim|required|strip_tags|callback_check_titulo'
+        'rules' => 'trim|required|strip_tags|callback_check_enlace'
     )
     ,array(
         'field' => 'tema',

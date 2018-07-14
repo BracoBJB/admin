@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="<?= base_url()?>plantillas/css/themify-icons.css">
     <!-- <link rel="stylesheet" href="<?= base_url()?>plantillas/css/flag-icon.min.css"> -->
     <link rel="stylesheet" href="<?= base_url()?>plantillas/css/cs-skin-elastic.css">
-    <link rel="stylesheet" href="<?= base_url()?>plantillas/scss/style.css">
+    <link rel="stylesheet" href="<?= base_url()?>plantillas/css/style.css">
 
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
 
