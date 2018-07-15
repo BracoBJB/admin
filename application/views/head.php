@@ -7,11 +7,32 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>CETA Admin - <?=$titulo;?></title>
-    <meta name="description" content="Sufee Admin - HTML5 Admin Template">
+    <meta name="description" content="CETA SGA - Módulo administrador de contenidos">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="apple-touch-icon" href="apple-icon.png">
     <link rel="icon" type="image/gif" href="<?=base_url()?>plantillas/img/favicon.ico">
+
+    <script src="<?= base_url()?>plantillas/js/vendor/jquery-2.1.4.min.js"></script>
+    <!-- <script src="<?= base_url()?>plantillas/js/vendor/jquery.min.js"></script> -->
+    <script src="<?= base_url()?>plantillas/js/popper.min.js"></script>
+    <script src="<?= base_url()?>plantillas/js/plugins.js"></script>
+    <script src="<?= base_url()?>plantillas/js/main.js"></script>
+
+    <script src="<?= base_url()?>plantillas/js/lib/data-table/datatables.min.js"></script>
+    <script src="<?= base_url()?>plantillas/js/lib/data-table/dataTables.bootstrap.min.js"></script>
+    <script src="<?= base_url()?>plantillas/js/lib/data-table/dataTables.buttons.min.js"></script>
+    <script src="<?= base_url()?>plantillas/js/lib/data-table/buttons.bootstrap.min.js"></script>
+    <script src="<?= base_url()?>plantillas/js/lib/data-table/jszip.min.js"></script>
+    <script src="<?= base_url()?>plantillas/js/lib/data-table/pdfmake.min.js"></script>
+    <script src="<?= base_url()?>plantillas/js/lib/data-table/vfs_fonts.js"></script>
+    <script src="<?= base_url()?>plantillas/js/lib/data-table/buttons.html5.min.js"></script>
+    <script src="<?= base_url()?>plantillas/js/lib/data-table/buttons.print.min.js"></script>
+    <script src="<?= base_url()?>plantillas/js/lib/data-table/buttons.colVis.min.js"></script>
+    <script src="<?= base_url()?>plantillas/js/lib/data-table/datatables-init.js"></script>
+    
+    <script src="<?=base_url()?>plantillas/js/lib/chosen/chosen.jquery.min.js"></script>
+    
     <!-- <link rel="shortcut icon" href="favicon.ico"> -->
 
     <link rel="stylesheet" href="<?= base_url()?>plantillas/css/normalize.css">

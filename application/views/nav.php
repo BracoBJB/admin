@@ -1,4 +1,4 @@
-<body>
+<body <?=$onLoad?>>
 
 
         <!-- Left Panel -->
@@ -10,8 +10,8 @@
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-menu" aria-controls="main-menu" aria-expanded="false" aria-label="Toggle navigation">
                     <i class="fa fa-bars"></i>
                 </button>
-                <a class="navbar-brand" href="./"><img src="<?= base_url()?>plantillas/img/logo1.png" alt="Logo"></a>
-                <a class="navbar-brand hidden" href="./"><img src="<?= base_url()?>plantillas/img/logo2.png" alt="Logo"></a>
+                <a class="navbar-brand" href="<?= base_url()?>/main"><img src="<?= base_url()?>plantillas/img/logo1.png" alt="Logo"></a>
+                <a class="navbar-brand hidden" href="<?= base_url()?>/main"><img src="<?= base_url()?>plantillas/img/logo2.png" alt="Logo"></a> 
             </div>
 
             <div id="main-menu" class="main-menu collapse navbar-collapse">
@@ -53,32 +53,12 @@
 
                     <h3 class="menu-title">Comunicados</h3><!-- /.menu-title -->
 
-                    <li class="menu-item-has-children dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Icons</a>
-                        <ul class="sub-menu children dropdown-menu">
-                            <li><i class="menu-icon fa fa-fort-awesome"></i><a href="font-fontawesome.html">Font Awesome</a></li>
-                            <li><i class="menu-icon ti-themify-logo"></i><a href="font-themify.html">Themefy Icons</a></li>
-                        </ul>
+                    <li>
+                        <a href="<?= base_url()?>/comunicados/nuevo"> <i class="menu-icon ti-write"></i>Nuevo </a>
                     </li>
                     <li>
-                        <a href="widgets.html"> <i class="menu-icon ti-email"></i>Widgets </a>
-                    </li>
-                    <li class="menu-item-has-children dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-bar-chart"></i>Charts</a>
-                        <ul class="sub-menu children dropdown-menu">
-                            <li><i class="menu-icon fa fa-line-chart"></i><a href="charts-chartjs.html">Chart JS</a></li>
-                            <li><i class="menu-icon fa fa-area-chart"></i><a href="charts-flot.html">Flot Chart</a></li>
-                            <li><i class="menu-icon fa fa-pie-chart"></i><a href="charts-peity.html">Peity Chart</a></li>
-                        </ul>
-                    </li>
-
-                    <li class="menu-item-has-children dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-area-chart"></i>Maps</a>
-                        <ul class="sub-menu children dropdown-menu">
-                            <li><i class="menu-icon fa fa-map-o"></i><a href="maps-gmap.html">Google Maps</a></li>
-                            <li><i class="menu-icon fa fa-street-view"></i><a href="maps-vector.html">Vector Maps</a></li>
-                        </ul>
-                    </li>
+                        <a href="<?= base_url()?>/comunicados/lista"> <i class="menu-icon ti-view-list"></i>Listado</a>
+                    </li> 
                     <h3 class="menu-title">Blog</h3><!-- /.menu-title -->
                     <li class="menu-item-has-children dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon ti-clipboard"></i>Entradas</a>
@@ -186,6 +166,7 @@
                     <div class="user-area dropdown float-right">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <img class="user-avatar rounded-circle" src="<?= base_url()?>plantillas/img/admin.jpg" alt="User Avatar">
+                            <i class="fa fa-user"></i><?=$user?><i class="fa fa-caret-down"></i>
                         </a>
 
                         <div class="user-menu dropdown-menu">

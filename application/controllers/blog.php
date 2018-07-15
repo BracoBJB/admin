@@ -31,6 +31,8 @@ class Blog extends CI_Controller
 		if(!is_null($semestres)) {
 			$data["semestres"] = $semestres->result_array();
 		}
+		$data["user"] = $usuario;
+		$data["onLoad"] = '';
 
         $this->load->view("head",$data);
         $this->load->view("nav");
@@ -145,13 +147,13 @@ class Blog extends CI_Controller
 		{
 			redirect(base_url().'admin');
 		}
-		
-		$data["user"] = $this->session->userdata('username');;
 
 		$data["titulo"] = "Lista de entradas";
 		$data["header_links"] = "list_post_header";
 		$data["script"] = "list_post_script";
 		$data["entradas"] =  $this->consultas->get_list_post();
+		$data["user"] = $this->session->userdata('username');
+		$data["onLoad"] = '';
 
 		$this->load->view("head",$data);
 		$this->load->view("nav");

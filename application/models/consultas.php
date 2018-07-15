@@ -105,20 +105,127 @@ class Consultas extends CI_Model
 			return '';
 		else
 			return $q->row()->name;
-		echo $sql;
+		// echo $sql;
 		echo $q;
 	}
-	// public function nombre_usuario($id_usuario)
-	// {	
-	// 	$sql="SELECT nombre||' '|| ap_paterno||' '||ap_materno as name FROM usuario WHERE id_usuario = '".$id_usuario."'";
-	// 	$q=$this->db->query($sql);
-	// 	if(is_null($q))
-	// 		return '';
-	// 	else
-	// 		return $q->row()->name;
-	// 	echo $sql;
-	// 	echo $q;
-	// }
+
+	public function get_lista_avisos()
+	{
+		$sql="SELECT id_aviso, titulo, descripcion, url_imagen, fecha_ini, fecha_fin, activo FROM est_avisos ORDER BY id_aviso";
+		$consulta=$this->db->query($sql);
+		if($consulta->num_rows()>0)
+		{
+			return $consulta;
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	public function get_aviso_poblacion($id_aviso)
+	{
+		$sql="SELECT item FROM est_avisos_poblacion WHERE id_aviso = $id_aviso";
+		$consulta=$this->db->query($sql);
+		if($consulta->num_rows()>0)
+		{
+			return $consulta;
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	public function get_poblacion()
+	{
+		$sql="SELECT nombre, id_poblacion FROM est_poblacion ORDER BY id_poblacion ASC";
+		$consulta=$this->db->query($sql);
+		if($consulta->num_rows()>0)
+		{
+			return $consulta;
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	public function get_all_carreras()
+	{
+		$consulta=$this->db->query("SELECT cod_carrera, nombre_carrera FROM carrera ORDER BY orden ASC ");
+		if($consulta->num_rows()>0)
+		{
+			return $consulta;
+		}
+		else
+		{
+			return null;
+		}		
+		
+	}
+
+	public function get_semestres_carrera($carrera)
+	{
+		$consulta=$this->db->query("SELECT DISTINCT semestre FROM semestre INNER JOIN pensum ON pensum.cod_pensum = semestre.cod_pensum WHERE cod_carrera = '$carrera' ORDER BY semestre ASC");
+		if($consulta->num_rows()>0)
+		{
+			return $consulta;
+		}
+		else
+		{
+			return null;
+		}		
+		
+	}
+
+	public function get_grupos_carrera($carrera)
+	{
+		$consulta=$this->db->query("SELECT cod_grupo FROM grupo INNER JOIN pensum ON pensum.cod_pensum = grupo.cod_pensum WHERE cod_carrera='$carrera' AND gestion in (SELECT gestion FROM gestion ORDER BY fecha_inicio DESC LIMIT 1) ORDER BY orden_turno ASC, semestre ASC, cod_grupo ASC ");
+		if($consulta->num_rows()>0)
+		{
+			return $consulta;
+		}
+		else
+		{
+			return null;
+		}		
+		
+	}
+
+	function update_table($tabla,$data,$where)
+	{
+		$this->db->where($where);
+		$this->db->update($tabla,$data);
+		// if($this->db->update($tabla,$data))
+		if($this->db->affected_rows()>0)
+			{return true;}
+		else
+			{return false;}
+	}
+
+	function delete_table($tabla,$where)
+	{	
+		$this->db->where($where);
+		$this->db->delete($tabla);
+
+		if($this->db->affected_rows()>0)
+			{return true;}
+		else
+			{return false;}
+	}
+
+	function insert_table($tabla,$data)
+	{
+		if($this->db->insert($tabla,$data))
+			{return true;}
+		else
+			{
+				// $error = $this->db->error();					  
+				// print_r($error);					  
+				return false;
+		}
+	}
 
 	public function exist_titulo($titulo) {
 		$this->db->select('titulo')->where('titulo',$titulo);
