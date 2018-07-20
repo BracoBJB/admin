@@ -35,22 +35,21 @@ class Comunicados extends CI_Controller
 					foreach ($get_poblacion ->result() as $row) {
 					$poblacion.=$row->item.'<br>';
 					}
-					$estado='true';
+					$estado='checked';
 				if($fila->activo=='f')
-					$estado='false';
+					$estado='';
 				$resultado.='<tr id="'.$fila->id_aviso.'">
 		                        <td>'.$fila->id_aviso.'</td>
 		                        <td>'.$fila->titulo.'</td>
 		                        <td>'.$fila->fecha_ini.'</td>
 		                        <td>'.$fila->fecha_fin.'</td>
-								<td>'.$fila->descripcion.'</td>
-								<td>'.$fila->url_imagen.'</td>
+								<td>'.$fila->descripcion.'</td>								
 								<td>'.$poblacion.'</td>
-
-								<td><label class="switch switch-text switch-primary switch-pill"><input type="checkbox" class="switch-input" checked="'.$estado.'"> <span data-on="Si" data-off="No" class="switch-label"></span> <span class="switch-handle"></span></label></td>
+								<td>'.$fila->carrera.'</td>
+								<td><label class="switch switch-3d switch-info"><input type="checkbox" class="switch-input" id="activo" '.$estado.'><span class="switch-label"></span><span class="switch-handle"></span></label></td>
 								<td><button class="btn btn-success btn-sm"  onclick=\'edit_comunicado('.$fila->id_aviso.');\'><span class="fa fa-pencil"></span></button>
-									<button class="btn btn-danger btn-sm"  onclick=\'del_comunicado('.$fila->id_aviso.');\' ><i class="fa fa-times"></i></button></td>
-							</tr>';
+									<button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modalMensajes" onclick=\'seguro_del('.$fila->id_aviso.',"'.$fila->titulo.'");\' ><i class="fa fa-times"></i></button></td>
+							</tr>';//<td>'.substr($fila->descripcion,0,200).'...'.'</td>
 			}
 		echo $resultado;
 	}
@@ -78,23 +77,59 @@ class Comunicados extends CI_Controller
 	{
 		$tipo_sel=$_POST['tipo_sel'];
 		$carrera=$_POST['carrera'];
+		$resultado=$this->get_poblacion_seleccionada($tipo_sel,$carrera,false,'0');		
+		echo $resultado;
+	}
+	public function get_poblacion_seleccionada($tipo_sel,$carrera,$modificar,$id)
+	{
+		$lista = array();
+		if($modificar)
+		{
+
+			$get_items=$this->consultas->get_avisos_población_item($id);
+			foreach ($get_items ->result() as $row)
+			{
+				array_push($lista,$row->item);
+			}
+		}
 		$resultado='';
 		if($tipo_sel=='2')
 		{
 			$get_grupo=$this->consultas->get_semestres_carrera($carrera);
+			if($get_grupo!=null)
 			foreach ($get_grupo ->result() as $fila) {
-					$resultado.='<option value="'.$fila->semestre.'" >'.$fila->semestre.'</option>';				
+				if($modificar)
+				{
+					$aux='';
+					for ($i=0; $i <count($lista) ; $i++) { 
+						if($lista[$i]==$fila->semestre)
+							$aux='selected="selected"';
+					}
+							$resultado.='<option value="'.$fila->semestre.'" '.$aux.'>'.$fila->semestre.'</option>';				
 				}
+				else
+					$resultado.='<option value="'.$fila->semestre.'" >'.$fila->semestre.'</option>';				
+			}
 		}
 		if($tipo_sel=='3')
 		{
 			$get_grupo=$this->consultas->get_grupos_carrera($carrera);
 			if($get_grupo!=null)
-				foreach ($get_grupo ->result() as $fila) {
-					$resultado.='<option value="'.$fila->cod_grupo.'" >'.$fila->cod_grupo.'</option>';				
+			foreach ($get_grupo ->result() as $fila) {
+				if($modificar)
+				{
+					$aux='';
+					for ($i=0; $i <count($lista) ; $i++) { 
+						if($lista[$i]==$fila->cod_grupo)
+							$aux='selected="selected"';
+					}
+							$resultado.='<option value="'.$fila->cod_grupo.'" '.$aux.'>'.$fila->cod_grupo.'</option>';				
 				}
+				else
+				$resultado.='<option value="'.$fila->cod_grupo.'" >'.$fila->cod_grupo.'</option>';				
+			}
 		}
-		echo $resultado;
+		return $resultado;
 	}
 	public function registrar()
 	{
@@ -107,7 +142,7 @@ class Comunicados extends CI_Controller
 		$contenido=$_POST['contenido'];
 		$activo=$_POST['activo'];
 		$contador=0;
-		$id=$this->consultas->consulta_SQL("select nextval('id_avisos_seq')")->row()->nextval;
+		$id=$this->consultas->consulta_SQL("select nextval('aviso_sequence')")->row()->nextval;
 		$data = array(
 						'id_aviso' =>$id,
 						'titulo' =>$titulo,
@@ -115,7 +150,8 @@ class Comunicados extends CI_Controller
 						'url_imagen' =>'none',
 						'fecha_ini' =>$fecha_ini,
 						'fecha_fin' =>$fecha_fin,
-						'activo' =>$activo,						 
+						'activo' =>$activo,	
+						'carrera' =>$carrera,					 
 						);			
 		$this->consultas->insert_table('est_avisos',$data);
 
@@ -127,6 +163,47 @@ class Comunicados extends CI_Controller
 				);			
 			$this->consultas->insert_table('est_avisos_poblacion',$data);
 		}
+		echo 'exito';
+	}
+	public function modificar()
+	{
+		$titulo=$_POST['titulo'];
+		$carrera=$_POST['carrera'];
+		$select_poblacion=$_POST['select_poblacion'];
+		$grupo_sel=$_POST['grupo_sel'];
+		$fecha_ini=$_POST['fecha_ini'];
+		$fecha_fin=$_POST['fecha_fin'];
+		$contenido=$_POST['contenido'];
+		$activo=$_POST['activo'];
+		$id=$_POST['id'];
+		$contador=0;
+		$data = array(
+						'titulo' =>$titulo,
+						'descripcion' =>$contenido,
+						'url_imagen' =>'none',
+						'fecha_ini' =>$fecha_ini,
+						'fecha_fin' =>$fecha_fin,
+						'activo' =>$activo,	
+						'carrera' =>$carrera,					 
+						);
+		$where = array(
+						'id_aviso' =>$id,											 
+						);			
+		$this->consultas->update_table('est_avisos',$data,$where);
+		$data = array(
+				'id_aviso' =>$id,
+				'id_poblacion' =>$select_poblacion,
+				);
+		$this->consultas->delete_table('est_avisos_poblacion',$where);
+		for ($i=0; $i < count($grupo_sel); $i++) { 
+			$data = array(
+				'id_aviso' =>$id,
+				'id_poblacion' =>$select_poblacion,
+				'item' =>$grupo_sel[$i],
+				);			
+			$this->consultas->insert_table('est_avisos_poblacion',$data);
+		}
+		echo 'exito';
 	}
 	public function del_comunicado()
 	{
@@ -137,6 +214,7 @@ class Comunicados extends CI_Controller
 			);
 			$this->consultas->delete_table('est_avisos',$where);
 			$this->consultas->delete_table('est_avisos_poblacion',$where);
+		echo 'exito++';
 	}
 	public function edit_comunicado($id)
 	{
@@ -145,14 +223,16 @@ class Comunicados extends CI_Controller
 			redirect(base_url());
 		}
 		$usuario=$this->session->userdata('username');		
-		$data= array('titulo'=> 'Nuevo Comunicado', 'header_links' => 'new_post_header','script' => 'new_post_script');
-		$onload='onload=""';
+		$data= array('titulo'=> 'Editar Comunicado', 'header_links' => 'new_post_header','script' => 'new_post_script');
+		$onload='onload="get_detalle_seleccion()"';
 		$this->load->view("head",$data);
 		$get_poblacion = $this->consultas->get_poblacion();
 		$consulta_carreras=$this->consultas->get_all_carreras();
+		$get_aviso = $this->consultas->get_edit_avisos($id);
 
+		$get_grupo_seleccionado=$this->get_poblacion_seleccionada($get_aviso->row()->id_poblacion,$get_aviso->row()->carrera,true,$id);		
 
-		$data= array('user'=> $usuario,'onLoad'=>$onload, 'tipo_poblacion'=>$get_poblacion, 'carreras'=>$consulta_carreras);
+		$data= array('user'=> $usuario,'onLoad'=>$onload, 'tipo_poblacion'=>$get_poblacion, 'carreras'=>$consulta_carreras,'get_aviso'=>$get_aviso,'var_modific'=>$get_grupo_seleccionado, 'id_sel'=>$id);
 		$this->load->view("nav", $data);
 
 		$this->load->view("comunicados/nuevos_comunicados");

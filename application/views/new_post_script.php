@@ -1,7 +1,7 @@
-    <script src="<?=base_url()?>plantillas/js/lib/chosen/chosen.jquery.min.js"></script>
+    <!-- <script src="<?=base_url()?>plantillas/js/lib/chosen/chosen.jquery.min.js"></script> -->
 
     <script>
-        /*
+        
         jQuery(document).ready(function() {
             jQuery(".standardSelect").chosen({
                 disable_search_threshold: 10,
@@ -9,7 +9,7 @@
                 width: "100%"
             });
         });
-*/
+
         jQuery(document).ready(function() {
             //alert(jQuery("#error-alert").length);
             if(jQuery("#error-alert").children().length>1) {

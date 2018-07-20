@@ -11,7 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="apple-touch-icon" href="apple-icon.png">
-    <link rel="icon" type="image/gif" href="<?=base_url()?>plantillas/img/favicon.ico">
+    <link rel="icon" type="image/gif" href="<?=base_url()?>plantillas/img/favicon.gif">
 
     <script src="<?= base_url()?>plantillas/js/vendor/jquery-2.1.4.min.js"></script>
     <!-- <script src="<?= base_url()?>plantillas/js/vendor/jquery.min.js"></script> -->
@@ -19,6 +19,7 @@
     <script src="<?= base_url()?>plantillas/js/plugins.js"></script>
     <script src="<?= base_url()?>plantillas/js/main.js"></script>
 
+    <script src="<?= base_url()?>plantillas/js/bootstrap.min.js"></script>
     <script src="<?= base_url()?>plantillas/js/lib/data-table/datatables.min.js"></script>
     <script src="<?= base_url()?>plantillas/js/lib/data-table/dataTables.bootstrap.min.js"></script>
     <script src="<?= base_url()?>plantillas/js/lib/data-table/dataTables.buttons.min.js"></script>
@@ -32,18 +33,23 @@
     <script src="<?= base_url()?>plantillas/js/lib/data-table/datatables-init.js"></script>
     
     <script src="<?=base_url()?>plantillas/js/lib/chosen/chosen.jquery.min.js"></script>
+    <script src="<?= base_url()?>plantillas/js/bootstrap-datepicker.min.js"></script>
     
     <!-- <link rel="shortcut icon" href="favicon.ico"> -->
 
     <link rel="stylesheet" href="<?= base_url()?>plantillas/css/normalize.css">
     <link rel="stylesheet" href="<?= base_url()?>plantillas/css/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="<?= base_url()?>plantillas/css/flag-icon.min.css"> -->
+    <link rel="stylesheet" href="<?= base_url()?>plantillas/css/bootstrap-datepicker3.min.css">
     <link rel="stylesheet" href="<?= base_url()?>plantillas/css/font-awesome.min.css">
     <link rel="stylesheet" href="<?= base_url()?>plantillas/css/themify-icons.css">
-    <!-- <link rel="stylesheet" href="<?= base_url()?>plantillas/css/flag-icon.min.css"> -->
     <link rel="stylesheet" href="<?= base_url()?>plantillas/css/cs-skin-elastic.css">
-    <link rel="stylesheet" href="<?= base_url()?>plantillas/css/style.css">
-
+    <link rel="stylesheet" href="<?= base_url()?>plantillas/scss/style.css">
+    <link rel="stylesheet" href="<?=base_url();?>plantillas/css/lib/datatable/dataTables.bootstrap.min.css">
+    
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
+    
+    
 
      <?php
         if(isset($header_links)) {

@@ -2,34 +2,40 @@
     <div class="col-sm-4">
         <div class="page-header float-left">
             <div class="page-title">
-                <h1>Nuevo Comunicado</h1>
+                <h1><?php if ( isset($titulo)) echo $titulo; ?></h1>
             </div>
         </div>
     </div>
     
 </div>
 <div class="content mt-3">
+            <!-- <div class="animated fadeIn"> -->
             <div class="animated fadeIn">
                 <div class="row">
 
                 <div class="col-lg-12">
                 <div class="card">
-                    <div class="card-header">
-                        <strong>Formulario de Creación</strong>
-                    </div>
                     <div class="card-body card-block">
                         <form action="" method="post" action="<?= base_url() ?>master/login">
                             <div class="form-group">
                                 <label for="titulo" class=" form-control-label">Titulo</label>
-                                <input type="text" id="titulo" name="titulo" placeholder="Ingrese el título del comunicado" class="form-control">
+                                <input type="text" id="titulo" name="titulo" placeholder="Ingrese el título del comunicado" class="form-control" value="<?php if ( isset($get_aviso)) echo $get_aviso->row()->titulo; ?>">
                             </div>
                             <div class="form-group">
                                 <label for="carrera" class=" form-control-label">Carrera</label>
                                 <select class="form-control" id="cod_carrera" name="carrera">
                                     <?php
                                         if($carreras!=null)
-                                        {   foreach ($carreras -> result() as $fila) 
-                                            echo '<option value="'.$fila->cod_carrera.'" >'.$fila->nombre_carrera.' </option>';
+                                        {   $carrera_aux='';
+                                            if ( isset($get_aviso))
+                                                 $carrera_aux=$get_aviso->row()->carrera;
+                                            foreach ($carreras -> result() as $fila) 
+                                            {
+                                                if($carrera_aux==$fila->cod_carrera)
+                                                    echo '<option value="'.$fila->cod_carrera.'" selected="true">'.$fila->nombre_carrera.' </option>';
+                                                else
+                                                    echo '<option value="'.$fila->cod_carrera.'" >'.$fila->nombre_carrera.' </option>';
+                                            }
                                         }
                                     ?>                                  
                                     </select>
@@ -39,8 +45,17 @@
                                 <select name="select_poblacion" id="select_poblacion" class="form-control">
                                     <?php
                                         if($tipo_poblacion!=null)
-                                        {   foreach ($tipo_poblacion -> result() as $fila) 
-                                                echo '<option value="'.$fila->id_poblacion.'" >'.$fila->nombre.'</option>';     
+                                        {   
+                                            $tipo_pob_aux='';
+                                            if ( isset($get_aviso))
+                                                 $tipo_pob_aux=$get_aviso->row()->id_poblacion;
+                                            foreach ($tipo_poblacion -> result() as $fila) 
+                                            {   
+                                                if($tipo_pob_aux==$fila->id_poblacion)
+                                                    echo '<option value="'.$fila->id_poblacion.'" selected="true">'.$fila->nombre.'</option>';  
+                                                else  
+                                                    echo '<option value="'.$fila->id_poblacion.'" >'.$fila->nombre.'</option>';  
+                                            }
                                         }
                                     ?>   
                                 </select>
@@ -49,65 +64,111 @@
                                 <label for="vat" class=" form-control-label" id="label_opcion">Selecciono todos los estudiantes</label>
 
                                 <select data-placeholder="Elija una opción..." multiple class="standardSelect form-control" id="grupo_sel" name="grupo_sel">
-                                    
+                                    <?php if ( isset($var_modific)) echo $var_modific; else echo '<option value="Todos">Todos</option>';?>    
                                 </select>
                             </div>
-                            <div class="form-group col-lg-6">
-                                <label for="fecha_ini" class=" form-control-label" id="label_opcion">Fecha Inicio</label>
-
-                                <input type="text" id="fecha_ini" name="fecha_ini" placeholder="dd/mm/aaaa" class="form-control">
+                            <div class="form-group ">
+                                <label class="control-label  for="fecha_ini">Fecha publicación</label>
+                                <div class="" id="sandbox-container">
+                                    <div class="input-daterange form-group input-group" id="datepicker" style="margin-left: 1px;">
+                                        <span class="input-group-addon" style="background-color: white;">Fecha Inicial:</span><input type="text" class="form-control" name="start" id="fecha_ini" readonly placeholder="Fecha inicial" value="<?php if ( isset($get_aviso)) 
+                                            {
+                                                $fecha_nueva= explode("-", $get_aviso->row()->fecha_ini);
+                                                echo $fecha_nueva[2].'/'.$fecha_nueva[1].'/'.$fecha_nueva[0];
+                                            }
+                                        else echo date('d/m/Y'); ?>">
+                                        <span class="input-group-addon" style="background-color: white;">Fecha Final:</span>
+                                        <input type="text" class="form-control" name="end" id="fecha_fin" readonly placeholder="Fecha final" value="<?php if ( isset($get_aviso)) 
+                                            {
+                                                $fecha_nueva= explode("-", $get_aviso->row()->fecha_fin);
+                                                echo $fecha_nueva[2].'/'.$fecha_nueva[1].'/'.$fecha_nueva[0];
+                                            }
+                                        else echo date('d/m/Y'); ?>">
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group col-lg-6">
-                                <label for="fecha_fin" class=" form-control-label" id="label_opcion">Fecha Fin</label>
 
-                                <input type="text" id="fecha_fin" name="fecha_fin" placeholder="dd/mm/aaaa" class="form-control">
-                            </div>
                             <div class="form-group">
                                 <label for="editor1" class="form-control-label">Contenido</label>
                                 <textarea name="editor1" id="editor1" rows="10" cols="80">
-                                Por favor escriba aquí el contenido del post
+                                <?php if ( isset($get_aviso)) echo $get_aviso->row()->descripcion; ?>
                                 </textarea>
                             </div>
                             <div class="form-group">
-                                <label for="activo" class=" form-control-label">Activo</label>
-
-                                <label class="switch switch-3d switch-success ml-5">
-                                    <input type="checkbox" class="switch-input" id="activo" checked="true"> 
-                                    <span class="switch-label"></span> 
-                                    <span class="switch-handle"></span>
-                                </label>
+                                <label for="activo" class=" form-control-label">Activo </label>
+                                    <label class="switch switch-3d switch-info"><input type="checkbox" class="switch-input" id="activo" <?php if ( isset($get_aviso)) 
+                                    {if($get_aviso->row()->activo=='t') echo 'checked';} else echo 'checked';
+                                     ?>>
+                                     <span class="switch-label"></span><span class="switch-handle"></span></label>
                             </div>
                         </form>
                     </div>
 
                     <div class="card-footer">
-                        <button type="submit" class="btn btn-primary btn-sm" id="registrar">
-                            <i class="fa fa-dot-circle-o"></i> Registrar
+                        <?php if ( isset($var_modific)) 
+                                echo '<button type="submit" class="btn btn-primary btn-sm" id="modificar"><i class="fa fa-edit"></i> Modificar </button>';
+                            else
+                                echo '<button type="submit" class="btn btn-primary btn-sm" id="registrar"><i class="fa fa-check"></i> Registrar </button>';
+                         ?>
+                        
+                        
+                        <button type="reset" class="btn btn-success btn-sm" id="btn_limpiar">
+                            <i class="fa fa-refresh"></i> Limpiar
                         </button>
-                        <button type="reset" class="btn btn-danger btn-sm">
-                            <i class="fa fa-ban"></i> Limpiar
-                        </button>
+                        <button type="button" class="btn btn-secondary mb-1" data-toggle="modal" data-target="#modalMensajes" id="btn_mensaje" style="display: none;"> <!-- no quitareste botón -->
+                          Small
+                      </button>
                     </div>
 
                 </div>
-            </div>
-
                 </div>
+                    
+                </div>
+                  
             </div><!-- .animated -->
-        </div>    
+        </div> 
+        
+        <div class="modal fade show" id="modalMensajes" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+            <div class="modal-dialog " role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTitle"></h5>                       
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-danger text-center" id="contenido_mensages">
+                            
+                        </div>
+                        
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="btn_cancelar" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                        <button type="button" id="btn_continuar" class="btn btn-primary" data-dismiss="modal">Continuar</button>
+                        <button type="button" id="btn_ver_lista" class="btn btn-primary" data-dismiss="modal">Ver Lista</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 <script >
+var modificar=false;
+var id_sel="<?php if(isset($id_sel)) echo $id_sel; else echo '';?>";
 
 $('#select_poblacion').change(function () {
     get_poblacion_sel();
 });
 function get_poblacion_sel() {
-    if($('select[name="select_poblacion"] option:selected').text()=='Todos')
-        $('#label_opcion').html('Selecciono todos los estudiantes');
-    if($('select[name="select_poblacion"] option:selected').text()=='Semestre')
-        $('#label_opcion').html('Seleccione semestre(s)');
     if($('select[name="select_poblacion"] option:selected').text()=='Grupo')
         $('#label_opcion').html('Seleccione Grupo(s)');
-    $.post(baseurl+"Comunicados/get_poblacion_sel",
+    if($('select[name="select_poblacion"] option:selected').text()=='Semestre')
+        $('#label_opcion').html('Seleccione semestre(s)');
+    if($('select[name="select_poblacion"] option:selected').text()=='Todos')
+    {
+        $('#label_opcion').html('Selecciono todos los estudiantes');
+        $('#grupo_sel').html('<option value="Todos">Todos</option>');
+        $(".standardSelect").trigger("chosen:updated");          
+    }
+    else
+    {
+        $.post(baseurl+"Comunicados/get_poblacion_sel",
         {   
             tipo_sel:$('#select_poblacion').val(),
             carrera:$('#cod_carrera').val(),
@@ -116,14 +177,44 @@ function get_poblacion_sel() {
             $('#grupo_sel').html(data);
             $(".standardSelect").trigger("chosen:updated");            
         });
+    }    
+}
+function limpiar_errores() {
+    $("#titulo" ).removeClass("is-invalid");
+    $("#label_opcion").css("color", "");
+}
+function validar() {
+  limpiar_errores();
+    control=true;
+    alerta=mensage.cabecera;
+    if($('#titulo').val().length<=0)
+    {
+        $("#titulo" ).addClass("is-invalid");
+        alerta+=mensage.titulo;
+        control=false;
+    }
+    if($(".search-choice").length<=0)
+    {
+        $("#label_opcion").css("color", "red");
+        alerta+=mensage.seleccion;
+        control=false;
+    }
+    if(CKEDITOR.instances['editor1'].getData().length<=0)
+    {
+        alerta+=mensage.contenido;
+        control=false;
+    }
+    if(!control)
+        mensajes('alerta_error',alerta+mensage.pie);
+   return control;
 }
 $('#registrar').click(function () {
-    var content = CKEDITOR.instances['editor1'].getData();
-   alert(content); 
-   // alert($(".standardSelect").chosen().val()); 
-    registrar_comunicaco();
+    
+    if(validar())
+        registrar_comunicado();
 });
-function registrar_comunicaco() {
+
+function registrar_comunicado() {
     $.post(baseurl+"Comunicados/registrar",
     {   
         titulo:$('#titulo').val(),
@@ -133,12 +224,104 @@ function registrar_comunicaco() {
         fecha_ini:$('#fecha_ini').val(),
         fecha_fin:$('#fecha_fin').val(),
         contenido:CKEDITOR.instances['editor1'].getData(),
-        activo:$('#activo').val(),
+        activo:$('#activo').prop('checked'),
     }, 
     function(data){
-        // $('#grupo_sel').html(data);
-        // $(".standardSelect").trigger("chosen:updated");            
-    });
+        if(data=='exito')
+        {
+            mensajes('exito');
+        }
+        else
+            mensajes('no_exito');                     
+    });    
 }
+$('#modificar').click(function () {
+    
+    if(validar())
+        modificar_comunicado();
+});
+function modificar_comunicado() {
+    $.post(baseurl+"Comunicados/modificar",
+    {   
+        titulo:$('#titulo').val(),
+        carrera:$('#cod_carrera').val(),
+        select_poblacion:$('#select_poblacion').val(),
+        grupo_sel:$(".standardSelect").chosen().val(),
+        fecha_ini:$('#fecha_ini').val(),
+        fecha_fin:$('#fecha_fin').val(),
+        contenido:CKEDITOR.instances['editor1'].getData(),
+        activo:$('#activo').prop('checked'),
+        id:id_sel,
+    }, 
+    function(data){
+        if(data=='exito')
+        {
+            mensajes('exito');
+        }
+        else
+            mensajes('no_exito');                     
+    });    
+}
+$('#sandbox-container input').datepicker({
+    clearBtn: true,
+    todayBtn: "linked",
+    autoclose: true,
+    todayHighlight: true,
+    daysOfWeekHighlighted: "0"
+});
 
+$('#sandbox-container .input-daterange').datepicker({
+});
+
+$('#btn_ver_lista').click(function () {
+    $(location).attr('href',baseurl+'/comunicados/lista');
+});
+$('#btn_continuar').click(function () {
+    $(location).attr('href',baseurl+'/comunicados/nuevo');
+});
+$('#btn_limpiar').click(function () {
+    $(location).attr('href',baseurl+'/comunicados/nuevo');
+});
+function limpiar_campos() {
+}
+mensage = {
+    cabecera    :'<h1><span class="fa fa-exclamation-triangle"></span></h1><span> <strong>¡Cuidado!</strong> Los siguientes campos se encuentran incompletos:</span><ul class="text-left" style="padding-left: 15px;">',
+    pie         :'</ul> No podrá proseguir si no corrige estos errores.',
+    titulo      : '<li> Debe introducir un título para el Comunicado.</li>',
+    seleccion   : '<li> Seleccione a qué población irá destinado el Comunicado.</li>',
+    contenido   : '<li> Intoruzca un contenido para el Comunicado.</li>',
+    exito       : '<h1><span class="fa fa-exclamation-triangle"></span></h1><span class="text-left"> Se registró correctamente el Comunicado.</span>',
+    no_exito  : '<h1><span class="fa fa-exclamation-triangle"></span></h1><span class="text-left"> No se pudo registrar el Comunicado. Comuníquese con el Administrador del sistema.</span>',
+    };
+function mensajes(tipo, data) {
+    $("#btn_cancelar").hide();
+    $("#btn_continuar").hide();
+    $("#btn_ver_lista").hide();    
+    if(tipo=='alerta_error')
+    {
+        $("#contenido_mensages").attr("class","alert alert-warning text-center");
+        $('#contenido_mensages').html(data);
+                $('#modalTitle').html('Faltan Datos');
+                $("#btn_cancelar").show();
+    }
+    if(tipo=='exito')
+    {
+        $("#contenido_mensages").attr("class","alert alert-success text-center");
+        $('#contenido_mensages').html(mensage.exito);
+                $('#modalTitle').html('Registro exitoso');
+                $("#btn_cancelar").hide();
+                $("#btn_continuar").show();
+                $("#btn_ver_lista").show();    
+    
+    }
+    if(tipo=='no_exito')
+    {
+        $("#contenido_mensages").attr("class","alert alert-danger text-center");
+        $('#contenido_mensages').html(mensage.no_exito);
+                $('#modalTitle').html('Error al registrar');
+                $("#btn_cancelar").show();
+    }
+    $('#btn_mensaje').click();
+    
+ }
 </script>

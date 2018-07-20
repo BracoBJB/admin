@@ -31,7 +31,7 @@ class Blog extends CI_Controller
 		if(!is_null($semestres)) {
 			$data["semestres"] = $semestres->result_array();
 		}
-		$data["user"] = $usuario;
+		//$data["user"] = $usuario;
 		$data["onLoad"] = '';
 
         $this->load->view("head",$data);
