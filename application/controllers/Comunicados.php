@@ -93,6 +93,10 @@ class Comunicados extends CI_Controller
 			}
 		}
 		$resultado='';
+		if($tipo_sel=='1')
+		{
+			$resultado.='<option value="Todos" selected="selected">Todos</option>';				
+		}
 		if($tipo_sel=='2')
 		{
 			$get_grupo=$this->consultas->get_semestres_carrera($carrera);

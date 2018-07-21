@@ -64,7 +64,7 @@
                                 <label for="vat" class=" form-control-label" id="label_opcion">Selecciono todos los estudiantes</label>
 
                                 <select data-placeholder="Elija una opción..." multiple class="standardSelect form-control" id="grupo_sel" name="grupo_sel">
-                                    <?php if ( isset($var_modific)) echo $var_modific; else echo '<option value="Todos">Todos</option>';?>    
+                                    <?php if ( isset($var_modific)) echo $var_modific; else echo '<option value="Todos" selected="selected">Todos</option>';?>    
                                 </select>
                             </div>
                             <div class="form-group ">
@@ -321,7 +321,6 @@ function mensajes(tipo, data) {
                 $('#modalTitle').html('Error al registrar');
                 $("#btn_cancelar").show();
     }
-    $('#btn_mensaje').click();
-    
+    $('#btn_mensaje').click();    
  }
 </script>
