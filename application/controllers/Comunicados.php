@@ -46,8 +46,9 @@ class Comunicados extends CI_Controller
 								<td>'.$fila->descripcion.'</td>								
 								<td>'.$poblacion.'</td>
 								<td>'.$fila->carrera.'</td>
+								<td>'.$fila->prioridad.'</td>
 								<td><label class="switch switch-3d switch-info"><input type="checkbox" class="switch-input" id="activo" '.$estado.'><span class="switch-label"></span><span class="switch-handle"></span></label></td>
-								<td><button class="btn btn-success btn-sm"  onclick=\'edit_comunicado('.$fila->id_aviso.');\'><span class="fa fa-pencil"></span></button>
+								<td nowrap><button class="btn btn-success btn-sm"  onclick=\'edit_comunicado('.$fila->id_aviso.');\'><span class="fa fa-pencil"></span></button>
 									<button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modalMensajes" onclick=\'seguro_del('.$fila->id_aviso.',"'.$fila->titulo.'");\' ><i class="fa fa-times"></i></button></td>
 							</tr>';//<td>'.substr($fila->descripcion,0,200).'...'.'</td>
 			}
@@ -145,13 +146,14 @@ class Comunicados extends CI_Controller
 		$fecha_fin=$_POST['fecha_fin'];
 		$contenido=$_POST['contenido'];
 		$activo=$_POST['activo'];
+		$prioridad=$_POST['prioridad'];
 		$contador=0;
 		$id=$this->consultas->consulta_SQL("select nextval('aviso_sequence')")->row()->nextval;
 		$data = array(
 						'id_aviso' =>$id,
 						'titulo' =>$titulo,
 						'descripcion' =>$contenido,
-						'url_imagen' =>'none',
+						'prioridad' =>$prioridad,
 						'fecha_ini' =>$fecha_ini,
 						'fecha_fin' =>$fecha_fin,
 						'activo' =>$activo,	
@@ -180,11 +182,12 @@ class Comunicados extends CI_Controller
 		$contenido=$_POST['contenido'];
 		$activo=$_POST['activo'];
 		$id=$_POST['id'];
+		$prioridad=$_POST['prioridad'];
 		$contador=0;
 		$data = array(
 						'titulo' =>$titulo,
 						'descripcion' =>$contenido,
-						'url_imagen' =>'none',
+						'prioridad' =>$prioridad,
 						'fecha_ini' =>$fecha_ini,
 						'fecha_fin' =>$fecha_fin,
 						'activo' =>$activo,	
@@ -241,5 +244,11 @@ class Comunicados extends CI_Controller
 
 		$this->load->view("comunicados/nuevos_comunicados");
 		$this->load->view("footer");
+	}
+	public function verificar_titulo()
+	{
+		$titulo=$_POST['titulo'];
+		$cod_carrera=$_POST['cod_carrera'];
+		echo $this->consultas->existe_titulo($titulo,$cod_carrera);
 	}	
 }

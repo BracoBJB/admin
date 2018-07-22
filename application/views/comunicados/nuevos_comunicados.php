@@ -17,11 +17,7 @@
                 <div class="card">
                     <div class="card-body card-block">
                         <form action="" method="post" action="<?= base_url() ?>master/login">
-                            <div class="form-group">
-                                <label for="titulo" class=" form-control-label">Titulo</label>
-                                <input type="text" id="titulo" name="titulo" placeholder="Ingrese el título del comunicado" class="form-control" value="<?php if ( isset($get_aviso)) echo $get_aviso->row()->titulo; ?>">
-                            </div>
-                            <div class="form-group">
+                           <div class="form-group">
                                 <label for="carrera" class=" form-control-label">Carrera</label>
                                 <select class="form-control" id="cod_carrera" name="carrera">
                                     <?php
@@ -67,7 +63,7 @@
                                     <?php if ( isset($var_modific)) echo $var_modific; else echo '<option value="Todos" selected="selected">Todos</option>';?>    
                                 </select>
                             </div>
-                            <div class="form-group ">
+                            <div class="form-group">
                                 <label class="control-label  for="fecha_ini">Fecha publicación</label>
                                 <div class="" id="sandbox-container">
                                     <div class="input-daterange form-group input-group" id="datepicker" style="margin-left: 1px;">
@@ -87,7 +83,15 @@
                                     </div>
                                 </div>
                             </div>
-
+                            <div class="form-group">
+                                <label for="prioridad" class=" form-control-label">Prioridad</label>
+                                <input type="number" id="prioridad" name="prioridad" min="1" max="5" class="form-control" value="<?php if ( isset($get_aviso)) echo $get_aviso->row()->prioridad; else echo 2 ?>">
+                            </div>
+                             <div class="form-group">
+                                <label for="titulo" class=" form-control-label">Titulo<span  class="fa fa-spinner fa-spin " id="spinner" style="display:none;"></span ></label>
+                                <input type="text" id="titulo" name="titulo" placeholder="Ingrese el título del comunicado" class="form-control" value="<?php if ( isset($get_aviso)) echo $get_aviso->row()->titulo; ?>">
+                            </div>
+                            
                             <div class="form-group">
                                 <label for="editor1" class="form-control-label">Contenido</label>
                                 <textarea name="editor1" id="editor1" rows="10" cols="80">
@@ -149,8 +153,49 @@
             </div>
         </div>
 <script >
-var modificar=false;
+var titulo_existe=false;
 var id_sel="<?php if(isset($id_sel)) echo $id_sel; else echo '';?>";
+
+$('#titulo').blur(function () {
+    rectificar_('titulo');
+    if($('#titulo').val().length>0)
+    {
+        $('#titulo').prop('disabled', true);
+        $('#spinner').show();
+        $.post(baseurl+"Comunicados/verificar_titulo",
+        {   
+            titulo:$('#titulo').val(),
+            cod_carrera:$('#cod_carrera').val(),
+        }, 
+        function(data){
+            if(data=='0')
+            {
+                $("#titulo" ).removeClass("is-invalid");
+                titulo_existe=false;
+            }
+            else
+            {
+                $("#titulo" ).addClass("is-invalid");
+                mensajes('alerta_existe_titulo',$('#titulo').val());
+                titulo_existe=true;
+            }
+            $('#titulo').prop('disabled', false);
+            $('#spinner').hide();
+        });
+    }
+})
+function rectificar_(cadena_nombre) {
+    cadena= $('#'+cadena_nombre).val().trim().split(' ');
+    corregido='';
+    for (i=0;i< cadena.length; i++)
+    {
+        if(cadena[i].length>0)
+        {   
+                corregido=corregido+' '+cadena[i];
+        }
+    }
+    $('#'+cadena_nombre).val(corregido.trim());
+}
 
 $('#select_poblacion').change(function () {
     get_poblacion_sel();
@@ -193,6 +238,12 @@ function validar() {
         alerta+=mensage.titulo;
         control=false;
     }
+    if(titulo_existe)
+    {
+        $("#titulo" ).addClass("is-invalid");
+        alerta+=mensage.titulo_existe;
+        control=false;
+    }
     if($(".search-choice").length<=0)
     {
         $("#label_opcion").css("color", "red");
@@ -225,6 +276,7 @@ function registrar_comunicado() {
         fecha_fin:$('#fecha_fin').val(),
         contenido:CKEDITOR.instances['editor1'].getData(),
         activo:$('#activo').prop('checked'),
+        prioridad:$('#prioridad').val(),
     }, 
     function(data){
         if(data=='exito')
@@ -252,6 +304,7 @@ function modificar_comunicado() {
         contenido:CKEDITOR.instances['editor1'].getData(),
         activo:$('#activo').prop('checked'),
         id:id_sel,
+        prioridad:$('#prioridad').val(),
     }, 
     function(data){
         if(data=='exito')
@@ -288,10 +341,12 @@ mensage = {
     cabecera    :'<h1><span class="fa fa-exclamation-triangle"></span></h1><span> <strong>¡Cuidado!</strong> Los siguientes campos se encuentran incompletos:</span><ul class="text-left" style="padding-left: 15px;">',
     pie         :'</ul> No podrá proseguir si no corrige estos errores.',
     titulo      : '<li> Debe introducir un título para el Comunicado.</li>',
+    titulo_existe      : '<li> EL título introducido ya existe para la carrera seleccionada.</li>',
     seleccion   : '<li> Seleccione a qué población irá destinado el Comunicado.</li>',
     contenido   : '<li> Intoruzca un contenido para el Comunicado.</li>',
     exito       : '<h1><span class="fa fa-exclamation-triangle"></span></h1><span class="text-left"> Se registró correctamente el Comunicado.</span>',
     no_exito  : '<h1><span class="fa fa-exclamation-triangle"></span></h1><span class="text-left"> No se pudo registrar el Comunicado. Comuníquese con el Administrador del sistema.</span>',
+    alerta_existe_titulo  : '<h1><span class="fa fa-exclamation-triangle"></span></h1><span class="text-left"> El título <strong id="titulo_intro"></strong> ya existe registrado en la carrera: <strong>'+$('#cod_carrera option:selected').text()+'</strong>, verifique sus datos.</span>',
     };
 function mensajes(tipo, data) {
     $("#btn_cancelar").hide();
@@ -319,6 +374,14 @@ function mensajes(tipo, data) {
         $("#contenido_mensages").attr("class","alert alert-danger text-center");
         $('#contenido_mensages').html(mensage.no_exito);
                 $('#modalTitle').html('Error al registrar');
+                $("#btn_cancelar").show();
+    }
+    if(tipo=='alerta_existe_titulo')
+    {
+        $("#contenido_mensages").attr("class","alert alert-danger text-center");
+        $('#contenido_mensages').html(mensage.alerta_existe_titulo);
+                $('#modalTitle').html('Título existe');
+                $('#titulo_intro').html(data);
                 $("#btn_cancelar").show();
     }
     $('#btn_mensaje').click();    

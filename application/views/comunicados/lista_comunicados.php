@@ -34,8 +34,9 @@
                                 <th>Contenido</th>
                                 <th>Población</th>
                                 <th>Carrera</th>
+                                <th>Prioridad</th>
         						<th>Activo</th>
-        						<th>Opciones</th>
+        						<th></th>
                               </tr>
                             </thead>
                             <tbody id="listado">
