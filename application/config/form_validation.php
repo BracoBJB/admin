@@ -1,5 +1,5 @@
 <?php
-
+/*
 $config['error_prefix'] = '<span class="badge badge-pill badge-danger">Error</span>';
 $config['error_suffix'] = '<br>';
 $config['blog/validar'] = array(
@@ -23,4 +23,4 @@ $config['blog/validar'] = array(
         'label' => 'Semestre',
         'rules' => 'required'
     )
-);
+);*/

@@ -61,7 +61,7 @@ class Comunicados extends CI_Controller
 			redirect(base_url());
 		}
 		$usuario=$this->session->userdata('username');		
-		$data= array('titulo'=> 'Nuevo Comunicado', 'header_links' => 'new_post_header','script' => 'new_post_script');
+		$data= array('titulo'=> 'Nuevo Comunicado', 'header_links' => 'post/new_post_header','script' => 'post/new_post_script');
 		$onload='onload=""';
 		$this->load->view("head",$data);
 		$get_poblacion = $this->consultas->get_poblacion();
@@ -230,7 +230,7 @@ class Comunicados extends CI_Controller
 			redirect(base_url());
 		}
 		$usuario=$this->session->userdata('username');		
-		$data= array('titulo'=> 'Editar Comunicado', 'header_links' => 'new_post_header','script' => 'new_post_script');
+		$data= array('titulo'=> 'Editar Comunicado', 'header_links' => 'post/new_post_header','script' => 'post/new_post_script');
 		$onload='onload="get_detalle_seleccion()"';
 		$this->load->view("head",$data);
 		$get_poblacion = $this->consultas->get_poblacion();

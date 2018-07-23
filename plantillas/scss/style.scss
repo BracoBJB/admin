@@ -35,7 +35,7 @@
 body {
     background: $container-bg;
     display: table;
-    font-family: 'Open Sans' sans-serif !important;
+    font-family: 'Open Sans' sans-serif;/* !important; comentado os*/
     font-size: 16px;
     width: 100%
 }
@@ -46,9 +46,11 @@ div[class*="col-"] {
 
 p {
     font-size: 16px;
+    /* font-family: 'Open Sans' sans-serif; comentado os*/
     font-family: 'Open Sans' sans-serif;
     font-weight: 400;
     line-height: 24px;
+    /* color: #878787; comentado os*/
     color: #878787;
 }
 p:focus {
@@ -65,6 +67,11 @@ a, button {
     -ms-transition: all 0.25s ease;
     -o-transition: all 0.25s ease;
     transition: all 0.25s ease;
+    /* comentado os agregado &:active */
+    &:active {
+        background: none !important;
+        border: none !important;
+    }
 
 }
 a:hover,
@@ -655,6 +662,10 @@ header .form-inline {
 .dropdown-menu {
     border-radius: 0;
     transform: none !important;
+}
+/* comentado os agregado */
+.dropdown-toggle::after {
+  display: none; 
 }
 
 .for-notification {

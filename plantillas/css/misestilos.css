@@ -1,0 +1,77 @@
+/*
+h1{
+    text-align: center;
+}
+#posts{
+    margin: 60px 0px 40px 300px;
+    width: 700px;
+    background-color: crimson;
+    color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+}
+h2{
+    margin-top: -15px;
+}
+#fecha{
+    float: right;
+}
+#autorfecha{
+    margin-bottom: 20px;
+}
+#comentarios{
+    margin: 20px 0px 0px 460px;
+}
+label{
+    display: block;
+}
+input[type=submit]{
+    padding: 5px 20px 5px 20px;
+    background-color: crimson;
+    color: #fff;
+    margin-bottom: 100px;
+}
+//estilos para mostrar los comentarios del post
+.loader{
+    margin: 20px 0px 20px 650px;
+    display: none;
+}
+#comentarioPublicado{
+    width: 300px;
+    position: absolute;
+    padding: 15px;
+    margin: -185px 0px 0px 900px;
+    text-align: center;
+    background-color: green;
+    color: #fff;
+    display: none;
+}
+//estilos para mostrar un mensaje si no hay comentarios
+#comentariosPublicados{
+    margin: 20px 0px 30px 400px;
+    width: 500px;
+    padding: 20px;
+    background-color: #444;
+    color: #fff;
+    font-weight: bold;
+}
+#sinComentarios{
+    background-color: #333;
+    color: orangered;
+    font-weight: bold;
+    text-align: center;
+    width: 300px;
+    padding: 15px;
+    margin: 10px 0px 10px 500px;
+}
+//estilos para mostrar un mensaje si no hay posts
+#sinComentarios{
+    background-color: #333;
+    color: orangered;
+    font-weight: bold;
+    text-align: center;
+    width: 300px;
+    padding: 15px;
+    margin: 10px 0px 10px 500px;
+}
+*/

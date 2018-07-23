@@ -1,3 +1,4 @@
+</head>
 <body <?=$onLoad?>>
 
 
@@ -60,13 +61,12 @@
                         <a href="<?= base_url()?>/comunicados/lista"> <i class="menu-icon ti-view-list"></i>Listado</a>
                     </li> 
                     <h3 class="menu-title">Blog</h3><!-- /.menu-title -->
-                    <li class="menu-item-has-children dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon ti-clipboard"></i>Entradas</a>
-                        <ul class="sub-menu children dropdown-menu">
-                            <li><i class="menu-icon ti-write"></i><a href="<?= base_url()?>blog/nueva_entrada">Crear</a></li>
-                            <li><i class="menu-icon ti-view-list"></i><a href="<?= base_url()?>blog/lista">Listado</a></li>
-                        </ul>
+                    <li>
+                        <a href="<?= base_url()?>nuevo_post"> <i class="menu-icon ti-write"></i>Nuevo </a>
                     </li>
+                    <li>
+                        <a href="<?= base_url()?>lista_post"> <i class="menu-icon ti-view-list"></i>Listado</a>
+                    </li> 
                 </ul>
             </div><!-- /.navbar-collapse -->
         </nav>

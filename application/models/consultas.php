@@ -229,13 +229,13 @@ class Consultas extends CI_Model
 	}
 	public function exist_titulo($titulo) {
 		$this->db->select('titulo')->where('titulo',$titulo);
-		$consulta = $this->db->get('entrada');
+		$consulta = $this->db->get('est_post');
 
 		return $consulta->num_rows() > 0;
 	}
 	public function exist_enlace($enlace) {
 		$this->db->select('enlace')->where('enlace',$enlace);
-		$consulta = $this->db->get('entrada');
+		$consulta = $this->db->get('est_post');
 
 		return $consulta->num_rows() > 0;
 	}
@@ -245,11 +245,33 @@ class Consultas extends CI_Model
 	}
 
 	public function get_list_post() {
-		$this->db->order_by("fecha", "desc");
-		$query = $this->db->get('entrada'); 
+		$this->db->select('ep.id_post,ep.titulo,ep.tema,epa.autor,ep.carrera,epp.poblacion,ep.contenido,ep.descripcion,ep.fecha,ep.activo,ep.permite_comentario');
+		$this->db->from('est_post as ep');
+		$this->db->join("(
+			select pa.id_post,string_agg(d.nombre, ', ') as autor
+			from est_post_autor as pa
+			inner join (
+				select CONCAT(nombre || ' ' || apellido_p || ' ' || apellido_m) as nombre,cod_docente from docente 
+			) as d on pa.cod_docente = d.cod_docente
+			group by pa.id_post
+		) as epa",'ep.id_post = epa.id_post');
+		$this->db->join("(
+			select pp.id_post,string_agg(pp.item, ', ') as poblacion
+			from est_post_poblacion as pp
+			group by pp.id_post
+		) as epp",'ep.id_post = epp.id_post');
+		$this->db->order_by("ep.fecha", "desc");
+		$query = $this->db->get();
 
 		return $query->result();
 	}
+	public function get_id_poblacion($nombre_poblacion) {
+		$this->db->select('id_poblacion')->where('nombre',$nombre_poblacion);
+		$consulta = $this->db->get('est_poblacion');
+
+		return $consulta->row()->id_poblacion;
+	}
+
 }
 
 ?>
