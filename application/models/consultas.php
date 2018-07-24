@@ -233,8 +233,11 @@ class Consultas extends CI_Model
 
 		return $consulta->num_rows() > 0;
 	}
-	public function exist_enlace($enlace) {
+	public function exist_enlace($enlace,$id_post = null) {
 		$this->db->select('enlace')->where('enlace',$enlace);
+		if(!is_null($id_post)) {
+			$this->db->where('id_post<>',$id_post);
+		}
 		$consulta = $this->db->get('est_post');
 
 		return $consulta->num_rows() > 0;
@@ -265,6 +268,28 @@ class Consultas extends CI_Model
 
 		return $query->result();
 	}
+	public function get_post($id_post) {
+		$this->db->select('ep.id_post,ep.titulo,ep.tema,ep.carrera,ep.contenido,ep.descripcion,ep.fecha,ep.activo,ep.permite_comentario');
+		$this->db->from('est_post as ep');
+		$this->db->where('ep.id_post',$id_post);
+		$query = $this->db->get();
+		return $query->row();
+	}
+	public function get_post_autor($id_post) {
+		$this->db->select('cod_docente');
+		$this->db->where('id_post',$id_post);
+		$query = $this->db->get('est_post_autor');
+		return $query->result();
+	}
+
+	public function get_post_poblacion($id_post) {
+		$this->db->select("id_poblacion,string_agg(item, ',') as poblacion_seleccionada");
+		$this->db->where('id_post',$id_post);
+		$this->db->group_by('id_poblacion');
+		$query = $this->db->get('est_post_poblacion');
+		return $query->row();
+	}
+
 	public function get_id_poblacion($nombre_poblacion) {
 		$this->db->select('id_poblacion')->where('nombre',$nombre_poblacion);
 		$consulta = $this->db->get('est_poblacion');
@@ -272,6 +297,38 @@ class Consultas extends CI_Model
 		return $consulta->row()->id_poblacion;
 	}
 
+	public function get_poblacion_type($carrera,$id_poblacion) {
+		if($id_poblacion == '3') {
+			$this->db->select('g.cod_grupo as item');
+			$this->db->from('grupo as g');
+			$this->db->join('pensum as p','p.cod_pensum = g.cod_pensum');
+			$this->db->where('p.cod_carrera',$carrera);
+			$this->db->where('g.gestion IN (SELECT gestion FROM gestion ORDER BY fecha_inicio DESC LIMIT 1)', NULL, FALSE);
+			$this->db->order_by('g.orden_turno', 'ASC');
+			$this->db->order_by('g.semestre', 'ASC');	
+			$this->db->order_by('g.cod_grupo', 'ASC');	
+			$consulta = $this->db->get();
+			return $consulta->num_rows()>0?$consulta:null;
+		} else if($id_poblacion == '2') {
+			$this->db->select('DISTINCT(s.semestre) as item');
+			$this->db->from('semestre as s');
+			$this->db->join('pensum as p','p.cod_pensum = s.cod_pensum');
+			$this->db->where('p.cod_carrera',$carrera);
+			$this->db->order_by('s.semestre', 'ASC');
+			$consulta = $this->db->get();
+			return $consulta->num_rows()>0?$consulta:null;
+		} else {
+			return null;
+		}
+	}
+
+	public function get_items_post($id_post,$id_poblacion) {
+		$this->db->select("item");
+		$this->db->where('id_post',$id_post);
+		$this->db->where('id_poblacion',$id_poblacion);
+		$query = $this->db->get('est_post_poblacion');
+		return $query->result();
+	}
 }
 
 ?>

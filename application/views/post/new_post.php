@@ -34,23 +34,23 @@
                     <div class="card-header">
                         <strong>Formulario de Creación</strong>
                     </div>
-                    <form method="post" action="<?= base_url() ?>nuevo_post/registrar">
+                    <form method="post" action="<?= base_url() ?><?=isset($post)?'nuevo_post/modificar':'nuevo_post/registrar'; ?>">
                     <div class="card-body card-block">
                             
                             <div class="form-group">
                                 <label for="titulo" class=" form-control-label">Titulo</label>
-                                <input type="text" id="titulo" name="titulo" autofocus placeholder="Ingrese el título del post" class="form-control" value="<?= set_value('titulo') ?>">
+                                <input type="text" id="titulo" name="titulo" autofocus placeholder="Ingrese el título del post" class="form-control" value="<?= isset($post)? $post->titulo : set_value('titulo') ; ?>">
                             </div>
                             <div class="form-group">
                                 <label for="tema" class=" form-control-label">Tema</label>
-                                <input type="text" id="tema" name="tema" placeholder="Ingrese el tema" class="form-control" value="<?= set_value('tema') ?>">
+                                <input type="text" id="tema" name="tema" placeholder="Ingrese el tema" class="form-control" value="<?= isset($post) ? $post->tema :set_value('tema'); ?>">
                             </div>
                             <div class="form-group">
                                 <label for="vat" class=" form-control-label">Seleccione los autor(es)</label>
                                 <select class="standardSelect form-control" multiple id="docente" name="docente[]" data-placeholder="Elija autor(es)...">
                                     <?php if ( isset($docentes))  : ?>
                                         <?php foreach($docentes as $doc): ?>
-                                            <option value="<?= $doc['cod_docente'] ?>" <?= set_select('docente[]',$doc['cod_docente']) ?> ><?= $doc['name'] ?></option>
+                                            <option value="<?= $doc['cod_docente'] ?>" <?=isset($autores)?docente_es_autor($doc['cod_docente'],$autores):set_select('docente[]',$doc['cod_docente']); ?> ><?= $doc['name'] ?></option>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
                                 </select>
@@ -61,44 +61,38 @@
                                     <?php
                                     if($carreras!=null)
                                     {   
-                                        foreach($carreras->result() as $fila): ?>
-
-                                            <option value="<?= $fila->cod_carrera ?>" <?= set_select('carrera',$fila->cod_carrera) ?> ><?= $fila->nombre_carrera ?></option>
-                                    <?php endforeach; 
+                                    foreach($carreras->result() as $fila): ?>
+                                        <option value="<?= $fila->cod_carrera ?>" <?=isset($post)?($fila->cod_carrera == $post->carrera?'selected="selected"':''):set_select('carrera',$fila->cod_carrera); ?> ><?= $fila->nombre_carrera ?></option>
+                                    <?php 
+                                    endforeach; 
                                     }?>
                                     </select>
                             </div>
                             <div class="form-group">
-                                <label for="select_poblacion" class=" form-control-label">Selecciones a quien va dirigido la publicación</label>
+                                <label for="select_poblacion" class=" form-control-label">Seleccione a quien va dirigido la publicación</label>
                                 <select name="select_poblacion" id="select_poblacion" class="form-control">
                                     <?php
                                     if($tipo_poblacion!=null)
                                     {
-                                        foreach($tipo_poblacion->result() as $fila): ?>
-
-                                        <option value="<?= $fila->id_poblacion ?>" <?= set_select('select_poblacion',$fila->id_poblacion) ?> ><?= $fila->nombre ?></option>
-                                    <?php endforeach; 
+                                    foreach($tipo_poblacion->result() as $fila): ?>
+                                        <option value="<?= $fila->id_poblacion ?>" <?= isset($id_poblacion)?($fila->id_poblacion == $id_poblacion?'selected="selected"':''):set_select('select_poblacion',$fila->id_poblacion);?> ><?= $fila->nombre ?></option>
+                                    <?php 
+                                    endforeach; 
                                     }
                                     ?>
                                 </select>
                             </div>
-                            <div class="form-group">
-                                <label for="vat" class=" form-control-label" id="label_opcion"><?= $label_poblacion_sel ?></label>
+                            <div class="form-group"> 
+                                <label for="vat" class=" form-control-label" id="label_opcion"><?= isset($label_poblacion_sel)?$label_poblacion_sel:'Selecciono todos los estudiantes' ?></label>
 
                                 <select data-placeholder="Elija una opción..." multiple class="standardSelect form-control" id="grupo_sel" name="grupo_sel[]">
                                 <?php
-                                if(isset($g_sel))
+                                if(isset($p_sel))
                                 { 
-                                    foreach($g_sel as $grupo): ?>
-                                    <option value="<?= $grupo->cod_grupo ?>" <?= set_select('grupo_sel[]',$grupo->cod_grupo) ?> ><?= $grupo->cod_grupo ?></option>
-                                <?php
-                                    endforeach;
-                                } ?>
-                                <?php
-                                if(isset($s_sel))
-                                { 
-                                    foreach($s_sel as $elem): ?>
-                                    <option value="<?= $elem->semestre ?>" <?= set_select('grupo_sel[]',$elem->semestre) ?> ><?= $elem->semestre ?></option>
+                                    foreach($p_sel as $p): ?>
+                                    <option value="<?= $p->item ?>" <?=isset($p_selected)?es_poblacion_seleccionada($p->item,$p_selected):set_select('grupo_sel[]',$p->item); ?> >
+                                    <?= $p->item ?>
+                                    </option>
                                 <?php
                                     endforeach;
                                 } ?>
@@ -108,18 +102,20 @@
                             <div class="form-group">
                                 <label for="editor1" class="form-control-label">Contenido</label>
                                 <textarea name="editor1" id="editor1" rows="10" cols="80">
+                                <?=isset($post)?$post->contenido:set_value('editor1');?>
                                 </textarea>
                             </div>
                             <div class="form-group">
                                 <label for="descripcion" class="form-control-label">Descripción de la publicación</label>
-                                <textarea name="descripcion" id="descripcion" rows="10" cols="80" class="form-control"><?= set_value('descripcion') ?>
+                                <textarea name="descripcion" id="descripcion" rows="10" cols="80" class="form-control">
+<?=isset($post)?$post->descripcion:set_value('descripcion');?>
                                 </textarea>
                             </div>
                             <div class="form-group">
                                 <label for="country" class=" form-control-label">Permitir comentarios</label>
 
-                                <label class="switch switch-default switch-success ml-5">
-                                    <input type="checkbox" class="switch-input" id="chk_coment" name="coment" value="Permitir Comentarios" <?= set_checkbox('coment','Permitir Comentarios',FALSE) ?> >
+                                <label class="switch switch-3d switch-info ml-5">
+                                    <input type="checkbox" class="switch-input" id="coment" name="coment" value="Permite" <?= isset($post)? ($post->permite_comentario=='t'?'checked="checked"':''):set_checkbox('coment','Permite',FALSE) ?> >
                                     <span class="switch-label"></span> 
                                     <span class="switch-handle"></span>
                                 </label>
@@ -127,20 +123,27 @@
 
                             <div class="form-group">
                                 <label for="activo" class=" form-control-label">Activo </label>
-                                    <label class="switch switch-3d switch-info"><input type="checkbox" class="switch-input" id="activo" <?php if ( isset($get_aviso)) 
-                                    {if($get_aviso->row()->activo=='t') echo 'checked';} else echo 'checked';
-                                     ?>>
-                                     <span class="switch-label"></span><span class="switch-handle"></span></label>
+
+                                <label class="switch switch-3d switch-info">
+                                    <input type="checkbox" class="switch-input" id="activo" name="activo" value="Activo" <?= isset($post)? ($post->activo=='t'?'checked="checked"':''):set_checkbox('activo','Activo',TRUE) ?> >
+                                    <span class="switch-label"></span>
+                                    <span class="switch-handle"></span>
+                                </label>
                             </div>
                     </div>
                     <div class="card-footer">
+                    
                         <button class="btn btn-primary btn-sm" id="btn_registrar">
-                            <i class="fa fa-dot-circle-o"></i> Registrar
+                        <i class="fa fa-edit"></i><?= isset($post)?'Modificar':'Registrar'; ?>
                         </button>
-                        
-                        <button type="reset" class="btn btn-danger btn-sm">
-                            <i class="fa fa-ban"></i> Cancelar
-                        </button>
+
+                        <?php 
+                        if (isset($post)) {
+                            echo '<button type="submit" class="btn btn-danger btn-sm" id="btn_cancelar"><i class="fa fa-edit"></i> Cancelar </button>';
+                        }    
+                        else
+                            echo '<button type="submit" class="btn btn-success btn-sm" id="btn_limpiar"><i class="fa fa-refresh"></i> Limpiar </button>';     
+                        ?>
                     </div>
                     </form>
                 </div>
@@ -170,6 +173,17 @@ function get_poblacion_sel() {
             $(".standardSelect").trigger("chosen:updated");            
         });
 }
+
+$('#btn_cancelar').click(function () {
+    $(location).attr('href',baseurl+'/lista_post');
+});
+
+
+$('#btn_limpiar').click(function () {
+    $(location).attr('href',baseurl+'/nuevo_post');
+});
+
+
 /*
 $('#registrar').click(function () {
     var content = CKEDITOR.instances['editor1'].getData();
