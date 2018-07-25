@@ -36,21 +36,25 @@ class Comunicados extends CI_Controller
 					$poblacion.=$row->item.'<br>';
 					}
 					$estado='checked';
-				if($fila->activo=='f')
+				if($fila->habilitado=='f')
 					$estado='';
+				$fecha_nueva= explode("-", $fila->fecha_ini);
+                $fecha_ini=$fecha_nueva[2].'/'.$fecha_nueva[1].'/'.$fecha_nueva[0];
+                $fecha_nueva= explode("-", $fila->fecha_fin);
+                $fecha_fin=$fecha_nueva[2].'/'.$fecha_nueva[1].'/'.$fecha_nueva[0];
 				$resultado.='<tr id="'.$fila->id_aviso.'">
 		                        <td>'.$fila->id_aviso.'</td>
 		                        <td>'.$fila->titulo.'</td>
-		                        <td>'.$fila->fecha_ini.'</td>
-		                        <td>'.$fila->fecha_fin.'</td>
+		                        <td>'.$fecha_ini.'</td>
+		                        <td>'.$fecha_fin.'</td>
 								<td>'.$fila->descripcion.'</td>								
 								<td>'.$poblacion.'</td>
 								<td>'.$fila->carrera.'</td>
-								<td>'.$fila->prioridad.'</td>
-								<td><label class="switch switch-3d switch-info"><input type="checkbox" class="switch-input" id="activo" '.$estado.'><span class="switch-label"></span><span class="switch-handle"></span></label></td>
+								<td>'.$fila->nombre.'</td>
+								<td><label class="switch switch-3d switch-info"><input type="checkbox" class="switch-input" id="habilitado" '.$estado.' disabled><span class="switch-label"></span><span class="switch-handle"></span></label></td>
 								<td nowrap><button class="btn btn-success btn-sm"  onclick=\'edit_comunicado('.$fila->id_aviso.');\'><span class="fa fa-pencil"></span></button>
 									<button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modalMensajes" onclick=\'seguro_del('.$fila->id_aviso.',"'.$fila->titulo.'");\' ><i class="fa fa-times"></i></button></td>
-							</tr>';//<td>'.substr($fila->descripcion,0,200).'...'.'</td>
+							</tr>';
 			}
 		echo $resultado;
 	}
@@ -66,9 +70,10 @@ class Comunicados extends CI_Controller
 		$this->load->view("head",$data);
 		$get_poblacion = $this->consultas->get_poblacion();
 		$consulta_carreras=$this->consultas->get_all_carreras();
+		$get_prioridad=$this->consultas->get_prioridad();
 
 
-		$data= array('user'=> $usuario,'onLoad'=>$onload, 'tipo_poblacion'=>$get_poblacion, 'carreras'=>$consulta_carreras);
+		$data= array('user'=> $usuario,'onLoad'=>$onload, 'tipo_poblacion'=>$get_poblacion, 'carreras'=>$consulta_carreras,'prioridad'=>$get_prioridad);
 		$this->load->view("nav", $data);
 
 		$this->load->view("comunicados/nuevos_comunicados");
@@ -145,7 +150,7 @@ class Comunicados extends CI_Controller
 		$fecha_ini=$_POST['fecha_ini'];
 		$fecha_fin=$_POST['fecha_fin'];
 		$contenido=$_POST['contenido'];
-		$activo=$_POST['activo'];
+		$habilitado=$_POST['habilitado'];
 		$prioridad=$_POST['prioridad'];
 		$contador=0;
 		$id=$this->consultas->consulta_SQL("select nextval('aviso_sequence')")->row()->nextval;
@@ -156,7 +161,7 @@ class Comunicados extends CI_Controller
 						'prioridad' =>$prioridad,
 						'fecha_ini' =>$fecha_ini,
 						'fecha_fin' =>$fecha_fin,
-						'activo' =>$activo,	
+						'habilitado' =>$habilitado,	
 						'carrera' =>$carrera,					 
 						);			
 		$this->consultas->insert_table('est_avisos',$data);
@@ -180,7 +185,7 @@ class Comunicados extends CI_Controller
 		$fecha_ini=$_POST['fecha_ini'];
 		$fecha_fin=$_POST['fecha_fin'];
 		$contenido=$_POST['contenido'];
-		$activo=$_POST['activo'];
+		$habilitado=$_POST['habilitado'];
 		$id=$_POST['id'];
 		$prioridad=$_POST['prioridad'];
 		$contador=0;
@@ -190,7 +195,7 @@ class Comunicados extends CI_Controller
 						'prioridad' =>$prioridad,
 						'fecha_ini' =>$fecha_ini,
 						'fecha_fin' =>$fecha_fin,
-						'activo' =>$activo,	
+						'habilitado' =>$habilitado,	
 						'carrera' =>$carrera,					 
 						);
 		$where = array(
@@ -221,7 +226,7 @@ class Comunicados extends CI_Controller
 			);
 			$this->consultas->delete_table('est_avisos',$where);
 			$this->consultas->delete_table('est_avisos_poblacion',$where);
-		echo 'exito++';
+		echo 'exito';
 	}
 	public function edit_comunicado($id)
 	{
@@ -235,11 +240,12 @@ class Comunicados extends CI_Controller
 		$this->load->view("head",$data);
 		$get_poblacion = $this->consultas->get_poblacion();
 		$consulta_carreras=$this->consultas->get_all_carreras();
+		$get_prioridad=$this->consultas->get_prioridad();
 		$get_aviso = $this->consultas->get_edit_avisos($id);
 
 		$get_grupo_seleccionado=$this->get_poblacion_seleccionada($get_aviso->row()->id_poblacion,$get_aviso->row()->carrera,true,$id);		
 
-		$data= array('user'=> $usuario,'onLoad'=>$onload, 'tipo_poblacion'=>$get_poblacion, 'carreras'=>$consulta_carreras,'get_aviso'=>$get_aviso,'var_modific'=>$get_grupo_seleccionado, 'id_sel'=>$id);
+		$data= array('user'=> $usuario,'onLoad'=>$onload, 'tipo_poblacion'=>$get_poblacion, 'carreras'=>$consulta_carreras,'prioridad'=>$get_prioridad,'get_aviso'=>$get_aviso,'var_modific'=>$get_grupo_seleccionado, 'id_sel'=>$id);
 		$this->load->view("nav", $data);
 
 		$this->load->view("comunicados/nuevos_comunicados");

@@ -35,7 +35,7 @@
                                 <th>Población</th>
                                 <th>Carrera</th>
                                 <th>Prioridad</th>
-        						<th>Activo</th>
+        						<th>Habilitado</th>
         						<th></th>
                               </tr>
                             </thead>
@@ -80,7 +80,9 @@ function get_lista() {
         }, 
         function(data){
             $('#listado').html(data);
-            $("#lista_avisos").DataTable();
+            $("#lista_avisos").DataTable({
+    "order": [ 2, 'desc' ]
+});
         });
 }
 function del_comunicado() {

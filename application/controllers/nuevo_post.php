@@ -56,7 +56,7 @@ class Nuevo_post extends CI_Controller
 			array(
 				'field' => 'titulo',
 				'label' => 'Titulo del Articulo',
-				'rules' => 'trim|required|strip_tags|callback_check_enlace'
+				'rules' => 'trim|required|strip_tags|callback_check_enlace_2'
 			)
 			,array(
 				'field' => 'tema',
@@ -430,6 +430,19 @@ class Nuevo_post extends CI_Controller
 			return TRUE;
 		}
 	}
+
+	public function check_enlace_2($titulo) {
+		$enlace = url_title(convert_accented_characters($titulo),'-',TRUE);
+		$result = $this->consultas->exist_enlace($enlace,null);
+		if($result) {
+			$this->form_validation->set_message('check_enlace','El titulo '.$titulo.' ya esta registrado.') ;
+			return FALSE;
+		} else {
+			return TRUE;
+		}
+	}
+
+
 
 	public function multiple_autor($array)
 	{

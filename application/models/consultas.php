@@ -77,7 +77,7 @@ class Consultas extends CI_Model
 
 	public function get_lista_avisos()
 	{
-		$sql="SELECT id_aviso, titulo, descripcion, fecha_ini, fecha_fin, activo, carrera, prioridad FROM est_avisos ORDER BY id_aviso";
+		$sql="SELECT id_aviso, titulo, descripcion, fecha_ini, fecha_fin, habilitado, carrera, est_prioridad.nombre FROM est_avisos INNER JOIN est_prioridad ON est_prioridad.id_prioridad = est_avisos.prioridad ORDER BY est_avisos.fecha_ini DESC";
 		$consulta=$this->db->query($sql);
 		if($consulta->num_rows()>0)
 		{
@@ -90,7 +90,7 @@ class Consultas extends CI_Model
 	}
 	public function get_edit_avisos($id)
 	{
-		$sql="SELECT est_avisos.id_aviso,titulo,descripcion,fecha_ini,fecha_fin,activo, carrera, item, id_poblacion, prioridad FROM est_avisos INNER JOIN est_avisos_poblacion ON est_avisos_poblacion.id_aviso = est_avisos.id_aviso WHERE est_avisos.id_aviso =  $id";
+		$sql="SELECT est_avisos.id_aviso,titulo,descripcion,fecha_ini,fecha_fin,habilitado, carrera, item, id_poblacion, prioridad FROM est_avisos INNER JOIN est_avisos_poblacion ON est_avisos_poblacion.id_aviso = est_avisos.id_aviso WHERE est_avisos.id_aviso =  $id";
 		$consulta=$this->db->query($sql);
 		if($consulta->num_rows()>0)
 		{
@@ -184,7 +184,19 @@ class Consultas extends CI_Model
 		}		
 		
 	}
-
+	public function get_prioridad()
+	{
+		$consulta=$this->db->query("SELECT id_prioridad, nombre FROM est_prioridad ORDER BY id_prioridad ASC");
+		if($consulta->num_rows()>0)
+		{
+			return $consulta;
+		}
+		else
+		{
+			return null;
+		}		
+		
+	}
 	function update_table($tabla,$data,$where)
 	{
 		$this->db->where($where);

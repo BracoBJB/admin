@@ -85,7 +85,23 @@
                             </div>
                             <div class="form-group">
                                 <label for="prioridad" class=" form-control-label">Prioridad</label>
-                                <input type="number" id="prioridad" name="prioridad" min="1" max="5" class="form-control" value="<?php if ( isset($get_aviso)) echo $get_aviso->row()->prioridad; else echo 2 ?>">
+                                <select data-placeholder="Elija una opción..." class="form-control" id="prioridad" name="prioridad">
+                                    <?php
+                                        if($prioridad!=null)
+                                        {   
+                                            $id_prio_aux='';
+                                            if ( isset($get_aviso))
+                                                 $id_prio_aux=$get_aviso->row()->prioridad;
+                                            foreach ($prioridad -> result() as $fila) 
+                                            {   
+                                                if($id_prio_aux==$fila->id_prioridad)
+                                                    echo '<option value="'.$fila->id_prioridad.'" selected="true">'.$fila->nombre.'</option>';  
+                                                else  
+                                                    echo '<option value="'.$fila->id_prioridad.'" >'.$fila->nombre.'</option>';  
+                                            }
+                                        }
+                                    ?>     
+                                </select>
                             </div>
                              <div class="form-group">
                                 <label for="titulo" class=" form-control-label">Titulo<span  class="fa fa-spinner fa-spin " id="spinner" style="display:none;"></span ></label>
@@ -99,9 +115,10 @@
                                 </textarea>
                             </div>
                             <div class="form-group">
-                                <label for="activo" class=" form-control-label">Activo </label>
-                                    <label class="switch switch-3d switch-info"><input type="checkbox" class="switch-input" id="activo" <?php if ( isset($get_aviso)) 
-                                    {if($get_aviso->row()->activo=='t') echo 'checked';} else echo 'checked';
+                                <label for="habilitado" class=" form-control-label">Habilitado </label>
+                                    <label class="switch switch-3d switch-info"><input type="checkbox" class="switch-input" id="habilitado" <?php if ( isset($get_aviso)) 
+                                    {if($get_aviso->row()->habilitado=='t') echo 'checked';} 
+                                    else echo 'checked';
                                      ?>>
                                      <span class="switch-label"></span><span class="switch-handle"></span></label>
                             </div>
@@ -146,13 +163,14 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" id="btn_cancelar" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-                        <button type="button" id="btn_continuar" class="btn btn-primary" data-dismiss="modal">Continuar</button>
+                        <button type="button" id="btn_continuar" class="btn btn-primary" data-dismiss="modal">Agregar Otro</button>
                         <button type="button" id="btn_ver_lista" class="btn btn-primary" data-dismiss="modal">Ver Lista</button>
                     </div>
                 </div>
             </div>
         </div>
 <script >
+
 var titulo_existe=false;
 var id_sel="<?php if(isset($id_sel)) echo $id_sel; else echo '';?>";
 
@@ -275,7 +293,7 @@ function registrar_comunicado() {
         fecha_ini:$('#fecha_ini').val(),
         fecha_fin:$('#fecha_fin').val(),
         contenido:CKEDITOR.instances['editor1'].getData(),
-        activo:$('#activo').prop('checked'),
+        habilitado:$('#habilitado').prop('checked'),
         prioridad:$('#prioridad').val(),
     }, 
     function(data){
@@ -302,7 +320,7 @@ function modificar_comunicado() {
         fecha_ini:$('#fecha_ini').val(),
         fecha_fin:$('#fecha_fin').val(),
         contenido:CKEDITOR.instances['editor1'].getData(),
-        activo:$('#activo').prop('checked'),
+        habilitado:$('#habilitado').prop('checked'),
         id:id_sel,
         prioridad:$('#prioridad').val(),
     }, 
@@ -315,15 +333,23 @@ function modificar_comunicado() {
             mensajes('no_exito');                     
     });    
 }
+ var date = new Date();
+    var currentMonth = date.getMonth();
+    var currentDate = date.getDate();
+    var currentYear = date.getFullYear();
+
+
 $('#sandbox-container input').datepicker({
     clearBtn: true,
     todayBtn: "linked",
     autoclose: true,
     todayHighlight: true,
-    daysOfWeekHighlighted: "0"
+    daysOfWeekHighlighted: "0",
+            minDate: '0' ,
 });
 
 $('#sandbox-container .input-daterange').datepicker({
+            minDate: '0' ,
 });
 
 $('#btn_ver_lista').click(function () {
