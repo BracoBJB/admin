@@ -341,6 +341,12 @@ class Consultas extends CI_Model
 		$query = $this->db->get('est_post_poblacion');
 		return $query->result();
 	}
+
+	public function verifica_titulo($titulo) {
+        $this->db->where('titulo',$titulo);
+		$consulta = $this->db->get('est_post');
+		return $consulta->num_rows() > 0;
+    }
 }
 
 ?>

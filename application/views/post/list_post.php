@@ -80,7 +80,10 @@
 
 
         <script>
-          $(document).ready(function() {
-          $('#bootstrap-data-table-export').DataTable();
-        } );
+
+$(document).ready(function() {
+    $('#bootstrap-data-table-export').DataTable({
+        "order": [ 6, 'desc' ]
+    });
+} );
         </script>

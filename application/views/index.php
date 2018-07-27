@@ -40,7 +40,7 @@
                         <?php echo form_open("",array("id" =>"login_form")); ?>
                         <div class="form-group">
                             <label>Usuario</label>
-                            <input type="text" id="n_user" name="n_user" class="form-control" placeholder="Escribe aqui tu ID usuario" value="<?= set_value('n_user') ?>" required>
+                            <input type="text" id="n_user" name="n_user" class="form-control"  autofocus placeholder="Escribe aqui tu ID usuario" value="<?= set_value('n_user') ?>" required>
                         </div>
                         <div class="form-group">
                            <label>Contraseña</label>

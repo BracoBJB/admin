@@ -56,7 +56,7 @@ class Nuevo_post extends CI_Controller
 			array(
 				'field' => 'titulo',
 				'label' => 'Titulo del Articulo',
-				'rules' => 'trim|required|strip_tags|callback_check_enlace_2'
+				'rules' => 'trim|required|strip_tags|callback_comprobar_titulo_ajax'
 			)
 			,array(
 				'field' => 'tema',
@@ -72,6 +72,11 @@ class Nuevo_post extends CI_Controller
 				'field' => 'descripcion',
 				'label' => 'Descripcion',
 				'rules' => 'trim|required|strip_tags'
+			)
+			,array(
+				'field' => 'editor1',
+				'label' => 'Contenido',
+				'rules' => 'trim|required|min_length[30]|strip_tags'
 			)
 		);
 
@@ -98,7 +103,7 @@ class Nuevo_post extends CI_Controller
 		}
 		
 		$this->form_validation->set_rules($rules);
-		$this->form_validation->set_error_delimiters('<span class="badge badge-pill badge-danger">Error</span>','<br>');
+		$this->form_validation->set_error_delimiters('<span style="color:#f00">','</span>');
 
 		if($this->form_validation->run() === FALSE) {
 			$this->index();
@@ -320,6 +325,19 @@ class Nuevo_post extends CI_Controller
 		}
 	}
 
+	 //validamos el titulo con ajax
+	 public function comprobar_titulo_ajax() {
+        $titulo = $this->input->post('titulo');
+        $existe = $this->consultas->verifica_titulo($titulo);
+        if ($existe) {
+            $this->form_validation->set_message('comprobar_titulo_ajax', '%s: ya existe en la base de datos');
+            return FALSE;
+        } else {
+            echo '<div style="display:none">1</div>';
+            return TRUE;
+        }
+    }
+
 	public function editar($id_post = null) {
 		if(!$this->session->userdata('username'))
 		{
@@ -360,7 +378,7 @@ class Nuevo_post extends CI_Controller
 		$select_poblacion = is_null($id_post)?$this->input->post('select_poblacion'):$post_poblacion->id_poblacion; 
 		$carrera = is_null($id_post)?$this->input->post('carrera'):$post->carrera;	
 		$p_selecionada = $this->consultas->get_poblacion_type($carrera,$id_poblacion);
-
+		
 		if(!is_null($select_poblacion) && $select_poblacion != $p_todos) {
 			if(!is_null($p_selecionada)) {
 				$data["p_sel"] = $p_selecionada->result();
