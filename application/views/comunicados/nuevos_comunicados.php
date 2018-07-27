@@ -64,7 +64,7 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label class="control-label  for="fecha_ini">Fecha publicación</label>
+                                <label class="control-label"  for="fecha_ini">Fecha publicación</label>
                                 <div class="" id="sandbox-container">
                                     <div class="input-daterange form-group input-group" id="datepicker" style="margin-left: 1px;">
                                         <span class="input-group-addon" style="background-color: white;">Fecha Inicial:</span><input type="text" class="form-control" name="start" id="fecha_ini" readonly placeholder="Fecha inicial" value="<?php if ( isset($get_aviso)) 
@@ -157,7 +157,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="alert alert-danger text-center" id="contenido_mensages">
-                            
+                             
                         </div>
                         
                     </div>
