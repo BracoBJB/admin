@@ -196,9 +196,11 @@ $('#titulo').blur(function () {
         $.post(baseurl+"nuevo_post/comprobar_titulo_ajax",
         {   
             titulo:$('#titulo').val(),
+            id_post:<?= isset($post)?$post->id_post:0; ?>,
             cod_carrera:$('#cod_carrera').val(),
         }, 
         function(data){
+            console.log("el data es: "+data);
             if(data=='<div style="display:none">1</div>')
             {
                 $("#titulo" ).removeClass("is-invalid");
@@ -344,7 +346,13 @@ jQuery(document).ready(function() {
     } else {
         jQuery("#error-alert").hide();
     }
-    $('#grupo-sel-container').hide();
+
+    if($('select[name="select_poblacion"] option:selected').text()=='Todos') {
+        $('#grupo-sel-container').hide();
+    } else {
+        $('#grupo-sel-container').show();
+    }
+    
 
     CKEDITOR.replace('editor1', {
         language: 'es'

@@ -56,7 +56,7 @@ class Nuevo_post extends CI_Controller
 			array(
 				'field' => 'titulo',
 				'label' => 'Titulo del Articulo',
-				'rules' => 'trim|required|strip_tags|callback_comprobar_titulo_ajax'
+				'rules' => 'trim|required|strip_tags|callback_check_enlace[0]'
 			)
 			,array(
 				'field' => 'tema',
@@ -327,10 +327,13 @@ class Nuevo_post extends CI_Controller
 
 	 //validamos el titulo con ajax
 	 public function comprobar_titulo_ajax() {
-        $titulo = $this->input->post('titulo');
-        $existe = $this->consultas->verifica_titulo($titulo);
+		$titulo = $this->input->post('titulo');
+		$enlace = url_title(convert_accented_characters($titulo),'-',TRUE);
+		$id_post = $this->input->post('id_post');
+		$existe = (($id_post == '0')?$this->consultas->exist_enlace($enlace,null):$this->consultas->exist_enlace($enlace,$id_post));
+		
         if ($existe) {
-            $this->form_validation->set_message('comprobar_titulo_ajax', '%s: ya existe en la base de datos');
+            echo $id_post.'hola que tal:'.(($id_post == '0')?'verdad':'falso');
             return FALSE;
         } else {
             echo '<div style="display:none">1</div>';
@@ -448,7 +451,7 @@ class Nuevo_post extends CI_Controller
 			return TRUE;
 		}
 	}
-
+/*
 	public function check_enlace_2($titulo) {
 		$enlace = url_title(convert_accented_characters($titulo),'-',TRUE);
 		$result = $this->consultas->exist_enlace($enlace,null);
@@ -459,7 +462,7 @@ class Nuevo_post extends CI_Controller
 			return TRUE;
 		}
 	}
-
+*/
 
 
 	public function multiple_autor($array)

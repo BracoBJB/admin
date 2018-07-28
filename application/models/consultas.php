@@ -239,12 +239,6 @@ class Consultas extends CI_Model
 
 		return $consulta->num_rows();
 	}
-	public function exist_titulo($titulo) {
-		$this->db->select('titulo')->where('titulo',$titulo);
-		$consulta = $this->db->get('est_post');
-
-		return $consulta->num_rows() > 0;
-	}
 	public function exist_enlace($enlace,$id_post = null) {
 		$this->db->select('enlace')->where('enlace',$enlace);
 		if(!is_null($id_post)) {
@@ -341,12 +335,6 @@ class Consultas extends CI_Model
 		$query = $this->db->get('est_post_poblacion');
 		return $query->result();
 	}
-
-	public function verifica_titulo($titulo) {
-        $this->db->where('titulo',$titulo);
-		$consulta = $this->db->get('est_post');
-		return $consulta->num_rows() > 0;
-    }
 }
 
 ?>
