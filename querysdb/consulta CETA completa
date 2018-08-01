@@ -48,6 +48,7 @@ create table if not exists est_post_comentario (
 	contenido text not null,
 	fecha date not null,
 	id_respuesta int,
+	verificado boolean default FALSE,
 	constraint FK_ID_ENTRADA foreign key(id_post)
 		references est_post (id_post) MATCH SIMPLE
 		ON UPDATE NO ACTION ON DELETE NO ACTION,
@@ -73,7 +74,9 @@ CREATE TABLE IF NOT EXISTS est_post_poblacion (
 		on update cascade on delete cascade
 );
 
+/*
 insert into est_poblacion (nombre) values 
 ('Todos'),
 ('Semestre'),
 ('Grupo');
+*/
