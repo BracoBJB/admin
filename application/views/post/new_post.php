@@ -18,24 +18,13 @@
         </div>
 
         <div class="content mt-3">
-
-            <!--
-            <div class="col-sm-12   ">
-
-                <div id="error-alert" class="alert alert-danger alert-dismissible fade show" role="alert">
-                    //validation_errors()
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div> 
-            </div> 
-            -->
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-header">
                         <strong>Formulario de Creación</strong>
                     </div>
-                    <form method="post" action="<?= base_url() ?><?=isset($post)?'nuevo_post/modificar':'nuevo_post/registrar'; ?>">
+                    <form method="post" action="<?= base_url() ?>nuevo_post/registrar">
+                    <input type="hidden" id="id_post_modificado"  name="id_post_modificado" value="<?= isset($post)?$post->id_post:'0'; ?>">
                     <div class="card-body card-block">
                             <div class="form-group">
                                 <label for="titulo" class=" form-control-label">Titulo<span  class="fa fa-spinner fa-spin " id="spinner" style="display:none;"></span ></label>
@@ -53,7 +42,7 @@
                                 <select class="standardSelect form-control" multiple id="docente" name="docente[]" data-placeholder="Elija autor(es)...">
                                     <?php if ( isset($docentes))  : ?>
                                         <?php foreach($docentes as $doc): ?>
-                                            <option value="<?= $doc['cod_docente'] ?>" <?=isset($autores)?docente_es_autor($doc['cod_docente'],$autores):set_select('docente[]',$doc['cod_docente']); ?> ><?= $doc['name'] ?></option>
+                                            <option value="<?= $doc->cod_docente ?>" <?=isset($autores)?docente_es_autor($doc->cod_docente,$autores):set_select('docente[]',$doc->cod_docente); ?> ><?= $doc->name ?></option>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
                                 </select>
@@ -115,9 +104,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="descripcion" class="form-control-label">Descripción de la publicación</label>
-                                <textarea name="descripcion" id="descripcion" rows="10" cols="80" class="form-control">
-<?=isset($post)?$post->descripcion:set_value('descripcion');?>
-                                </textarea>
+                                <textarea name="descripcion" id="descripcion" rows="10" cols="80" class="form-control"><?=isset($post)?$post->descripcion:set_value('descripcion');?></textarea>
                                 <?= form_error('descripcion') ?>
                             </div>
                             <div class="form-group">
@@ -196,7 +183,7 @@ $('#titulo').blur(function () {
         $.post(baseurl+"nuevo_post/comprobar_titulo_ajax",
         {   
             titulo:$('#titulo').val(),
-            id_post:<?= isset($post)?$post->id_post:0; ?>,
+            id_post_modificado:$('#id_post_modificado').val(),
             cod_carrera:$('#cod_carrera').val(),
         }, 
         function(data){

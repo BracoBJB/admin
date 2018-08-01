@@ -38,10 +38,13 @@
                     </li> 
                     <h3 class="menu-title">Blog</h3><!-- /.menu-title -->
                     <li>
-                        <a href="<?= base_url()?>nuevo_post"> <i class="menu-icon ti-write"></i>Nuevo </a>
+                        <a href="<?= base_url()?>blog/post"> <i class="menu-icon ti-write"></i>Nuevo </a>
                     </li>
                     <li>
-                        <a href="<?= base_url()?>lista_post"> <i class="menu-icon ti-view-list"></i>Listado</a>
+                        <a href="<?= base_url()?>blog/lista"> <i class="menu-icon ti-view-list"></i>Listado</a>
+                    </li> 
+                    <li>
+                        <a href="<?= base_url()?>blog/comentarios"> <i class="menu-icon ti-view-list"></i>Lista de comentarios</a>
                     </li> 
                 </ul>
             </div><!-- /.navbar-collapse -->

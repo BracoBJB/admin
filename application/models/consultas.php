@@ -157,6 +157,24 @@ class Consultas extends CI_Model
 		
 	}
 
+	public function get_docentes($todos = FALSE) {
+
+		$this->db->select("CONCAT(nombre,' ', apellido_p,' ', apellido_m) as name,cod_docente");
+		if(!$todos) {
+			$this->db->where('activo',TRUE);
+		}
+		$consulta = $this->db->get('docente');
+
+		if($consulta->num_rows()>0)
+		{
+			return $consulta;
+		}
+		else
+		{
+			return null;
+		}
+	}
+
 	public function get_semestres_carrera($carrera)
 	{
 		$consulta=$this->db->query("SELECT DISTINCT semestre FROM semestre INNER JOIN pensum ON pensum.cod_pensum = semestre.cod_pensum WHERE cod_carrera = '$carrera' ORDER BY semestre ASC");
@@ -239,10 +257,10 @@ class Consultas extends CI_Model
 
 		return $consulta->num_rows();
 	}
-	public function exist_enlace($enlace,$id_post = null) {
+	public function exist_enlace($enlace,$id_post = FALSE) {
 		$this->db->select('enlace')->where('enlace',$enlace);
-		if(!is_null($id_post)) {
-			$this->db->where('id_post<>',$id_post);
+		if(!$id_post) {
+			$this->db->where("id_post != $id_post");
 		}
 		$consulta = $this->db->get('est_post');
 
