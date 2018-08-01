@@ -145,7 +145,7 @@ class Blog extends CI_Controller
 			,array(
 				'field' => 'editor1',
 				'label' => 'Contenido',
-				'rules' => 'trim|required|min_length[30]|strip_tags'
+				'rules' => 'trim|required|min_length[30]'
 			)
 		);
 
@@ -194,7 +194,7 @@ class Blog extends CI_Controller
 				'carrera' => $this->input->post('carrera'),
 				'titulo' => $titulo,
 				'tema' => $this->input->post('tema'),
-				'contenido' => $this->input->post('editor1'),
+				'contenido' => $this->input->post('editor1',FALSE),
 				'etiquetas' => '',
 				'enlace' => $enlace,
 				'fecha' => date('Y-m-d H:i:s'),
@@ -246,7 +246,7 @@ class Blog extends CI_Controller
 					);
 					$this->consultas->insert_table('est_post_poblacion',$data);
 				}
-				redirect(base_url() . "nuevo_post/preview/".$id_post);
+				redirect(base_url() . "blog/preview/".$id_post);
 			}
 		}
 	}
@@ -258,7 +258,7 @@ class Blog extends CI_Controller
 		}
 
 		if(is_null($id_post)) {
-			redirect(base_url() . "nuevo_post");
+			redirect(base_url() . "blog/post");
 		} else {
 			$data["titulo"] = "Articulo creato";
 			$data["user"] = $this->session->userdata('username');
@@ -379,7 +379,7 @@ class Blog extends CI_Controller
 	//Validacion a travez de callback
     public function check_enlace($titulo,$id_post = FALSE) {
 		$enlace = url_title(convert_accented_characters($titulo),'-',TRUE);
-		$result = $id_post ?$this->consultas->exist_enlace($enlace):$this->consultas->exist_enlace($enlace,$id_post);
+		$result = $id_post ?$this->consultas->exist_enlace($enlace,$id_post):$this->consultas->exist_enlace($enlace);
 		if($result) {
 			$this->form_validation->set_message('check_enlace','El titulo '.$titulo.' ya esta registrado.') ;
 			return FALSE;

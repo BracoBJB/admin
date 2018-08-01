@@ -259,7 +259,7 @@ class Consultas extends CI_Model
 	}
 	public function exist_enlace($enlace,$id_post = FALSE) {
 		$this->db->select('enlace')->where('enlace',$enlace);
-		if(!$id_post) {
+		if($id_post) {
 			$this->db->where("id_post != $id_post");
 		}
 		$consulta = $this->db->get('est_post');

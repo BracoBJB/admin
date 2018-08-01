@@ -10,7 +10,7 @@
         <div class="page-header float-right">
             <div class="page-title">
                 <ol class="breadcrumb text-right">
-                    <a class="btn btn-primary"  href="<?= base_url()?>nuevo_post"><i class="fa fa-plus"></i> Agregar Publicación</a>
+                    <a class="btn btn-primary"  href="<?= base_url()?>blog/post"><i class="fa fa-plus"></i> Agregar Publicación</a>
                 </ol>
             </div>
         </div>
@@ -56,10 +56,10 @@
                         <td><?= $item->activo=='t'?'Activo':'No Activo'; ?></td>
                         <td><?= $item->permite_comentario=='t'?'Permite':'No Permite'; ?></td>
                         <td>
-                          <a class="btn btn-success btn-sm" href="<?= base_url() ?>nuevo_post/editar/<?= $item->id_post ?>" role="button">
+                          <a class="btn btn-success btn-sm" href="<?= base_url() ?>blog/post/<?= $item->id_post ?>" role="button">
                             <i class="fa fa-pencil"></i>
                           </a>
-                          <a class="btn btn-danger btn-sm" href="<?= base_url() ?>nuevo_post/eliminar/<?= $item->id_post ?>" role="button">
+                          <a class="btn btn-danger btn-sm" href="<?= base_url() ?>blog/eliminar/<?= $item->id_post ?>" role="button">
                             <i class="fa fa-times"></i>
                           </a>
                         </td>

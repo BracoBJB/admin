@@ -23,7 +23,7 @@
                     <div class="card-header">
                         <strong>Formulario de Creación</strong>
                     </div>
-                    <form method="post" action="<?= base_url() ?>nuevo_post/registrar">
+                    <form method="post" action="<?= base_url() ?>blog/registrar">
                     <input type="hidden" id="id_post_modificado"  name="id_post_modificado" value="<?= isset($post)?$post->id_post:'0'; ?>">
                     <div class="card-body card-block">
                             <div class="form-group">
@@ -180,7 +180,7 @@ $('#titulo').blur(function () {
     {
         $('#titulo').prop('disabled', true);
         $('#spinner').show();
-        $.post(baseurl+"nuevo_post/comprobar_titulo_ajax",
+        $.post(baseurl+"blog/comprobar_titulo_ajax",
         {   
             titulo:$('#titulo').val(),
             id_post_modificado:$('#id_post_modificado').val(),
@@ -310,12 +310,12 @@ function get_poblacion_sel() {
 }
 
 $('#btn_cancelar').click(function () {
-    $(location).attr('href',baseurl+'lista_post');
+    $(location).attr('href',baseurl+'blog/lista');
 });
 
 
 $('#btn_limpiar').click(function () {
-    $(location).attr('href',baseurl+'nuevo_post');
+    $(location).attr('href',baseurl+'blog/post<?= isset($post)?'/'.$post->id_post:''; ?>');
 });
 
 jQuery(document).ready(function() {
