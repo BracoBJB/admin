@@ -7,49 +7,7 @@ class Blog extends CI_Controller
 	{
 		parent::__construct();
     }
-    /*
-    function index() {
-        if(!$this->session->userdata('username'))
-		{
-			redirect(base_url().'admin');
-		}
-		
-		$consulta = $this->consultas->consulta_SQL("SELECT CONCAT(nombre,' ', apellido_p,' ', 		apellido_m) as name,cod_docente FROM docente WHERE activo = TRUE");
-		if(!is_null($consulta)) {
-			$data["docentes"] = $consulta->result_array();
-		}
-
-		$p_todos = $this->consultas->get_id_poblacion("Todos");
-		$p_grup = $this->consultas->get_id_poblacion("Grupo");
-		$select_poblacion= $this->input->post('select_poblacion');
-		$carrera = $this->input->post('carrera');
-	
-		if(!is_null($select_poblacion) && $select_poblacion != $p_todos) {
-			if($select_poblacion == $p_grup) {
-				$data["g_sel"] = $this->consultas->get_grupos_carrera($carrera)->result();
-				$data["label_poblacion_sel"] ="Seleccione Grupo(s)";
-			} else {
-				$data["s_sel"] = $this->consultas->get_semestres_carrera($carrera)->result();
-				$data["label_poblacion_sel"] ="Seleccione semestre(s)";
-			}
-		} else {
-			$data["label_poblacion_sel"] ="Selecciono todos los estudiantes";
-		}
-		
-		$data["titulo"] = "Crear articulo";
-		//$data["script"] = "new_post_script";
-		$data["carreras"] = $this->consultas->get_all_carreras();
-		$data["tipo_poblacion"] = $this->consultas->get_poblacion();
-		$data["user"] = $this->session->userdata('username');
-		$data["onLoad"] = '';
-
-        $this->load->view("head",$data);
-        $this->load->view("post/new_post_header");
-        $this->load->view("nav");
-        $this->load->view("post/new_post"); 	
-		$this->load->view("footer");
-    }
-	*/
+    
 	public function post($id_post_modificar = FALSE) {
 		if(!$this->session->userdata('username'))
 		{
@@ -117,8 +75,6 @@ class Blog extends CI_Controller
 	}
 
     public function registrar() {
-
-
 		$id_post_modificar = $this->input->post('id_post_modificado');
         
 		$rules = array(
@@ -145,7 +101,7 @@ class Blog extends CI_Controller
 			,array(
 				'field' => 'editor1',
 				'label' => 'Contenido',
-				'rules' => 'trim|required|min_length[30]'
+				'rules' => 'trim|required'
 			)
 		);
 
@@ -177,23 +133,36 @@ class Blog extends CI_Controller
 		$is_new_post = is_null($id_post_modificar) || $id_post_modificar == '0';
 
 		if($this->form_validation->run() === FALSE) {
-			if($is_new_post) {
-				$this->post();
+			if($this->input->is_ajax_request()) {
+				echo 'no cumple con la validacion del servidor';
+				echo validation_errors();
 			} else {
-				$this->post($id_post_modificar);
+				if($is_new_post) {
+					$this->post();
+				} else {
+					$this->post($id_post_modificar);
+				}
 			}
 		} else {
+			$tiene_comentario = FALSE;
+			$post_activo = FALSE;
+			if($this->input->is_ajax_request()) {
+				$tiene_comentario = $this->input->post('coment');
+				$post_activo = $this->input->post('activo');
+			} else{
+				$tiene_comentario = $this->input->post('coment') === "Permite";
+				$post_activo = $this->input->post('activo') === "Activo";
+			}
+			
 
-			$tiene_comentario = $this->input->post('coment') === "Permite";
-			$post_activo = $this->input->post('activo') === "Activo";
 			$titulo = $this->input->post('titulo');
 			$enlace = url_title(convert_accented_characters($titulo),'-',TRUE);
 
 			$data = array(
 				'id_usuario' => $this->session->userdata('username'),
-				'carrera' => $this->input->post('carrera'),
 				'titulo' => $titulo,
 				'tema' => $this->input->post('tema'),
+				'carrera' => $this->input->post('carrera'),
 				'contenido' => $this->input->post('editor1',FALSE),
 				'etiquetas' => '',
 				'enlace' => $enlace,
@@ -246,7 +215,13 @@ class Blog extends CI_Controller
 					);
 					$this->consultas->insert_table('est_post_poblacion',$data);
 				}
-				redirect(base_url() . "blog/preview/".$id_post);
+
+				if($this->input->is_ajax_request()) {
+					echo "exito";
+				} else {
+					redirect(base_url() . "blog/preview/".$id_post);
+				}
+				
 			}
 		}
 	}
@@ -290,67 +265,16 @@ class Blog extends CI_Controller
 
 	}
 
-	/*
-	public function editar($id_post = null) {
-		if(!$this->session->userdata('username'))
-		{
-			redirect(base_url().'admin');
-		}
-		if(!is_null($id_post)) {
-			
-		}
-		$post = $this->consultas->get_post($id_post);
-		if(is_null($post)) {
-			redirect(base_url().'nuevo_post');
-		}
+	public function eliminar() {
+		$id_post_eliminar = $this->input->post('id_post');
 		
-		$consulta = $this->consultas->consulta_SQL("SELECT CONCAT(nombre,' ', apellido_p,' ', 		apellido_m) as name,cod_docente FROM docente WHERE activo = TRUE");
-		if(!is_null($consulta)) {
-			$data["docentes"] = $consulta->result_array();
-		}
-		
-		$data["titulo"] = "Crear articulo";
-		$data["carreras"] = $this->consultas->get_all_carreras();
-		$data["tipo_poblacion"] = $this->consultas->get_poblacion();
-		$data["user"] = $this->session->userdata('username');
-		$data["onLoad"] = '';
-
-		$this->session->set_flashdata('id_post',$id_post);
-
-		$post = $this->consultas->get_post($id_post);
-		$data['post'] = $post;
-		$data['autores'] = $this->consultas->get_post_autor($id_post);
-		$post_poblacion = $this->consultas->get_post_poblacion($id_post);
-		$id_poblacion = $post_poblacion->id_poblacion;
-		$data['id_poblacion'] = $id_poblacion;
-		$data['p_selected'] = $this->consultas->get_items_post($id_post,$id_poblacion);
-		//explode(",", $post_poblacion->poblacion_seleccionada);
-		$p_todos = $this->consultas->get_id_poblacion("Todos");
-		$p_grup = $this->consultas->get_id_poblacion("Grupo");
-		
-		$select_poblacion = is_null($id_post)?$this->input->post('select_poblacion'):$post_poblacion->id_poblacion; 
-		$carrera = is_null($id_post)?$this->input->post('carrera'):$post->carrera;	
-		$p_selecionada = $this->consultas->get_poblacion_type($carrera,$id_poblacion);
-		
-		if(!is_null($select_poblacion) && $select_poblacion != $p_todos) {
-			if(!is_null($p_selecionada)) {
-				$data["p_sel"] = $p_selecionada->result();
-			}
-			$data["label_poblacion_sel"] = $select_poblacion == $p_grup ?"Seleccione Grupo(s)":"Seleccione semestre(s)";
-		} else {
-			$data["label_poblacion_sel"] ="Selecciono todos los estudiantes";
-		}
-		
-
-        $this->load->view("head",$data);
-        $this->load->view("post/new_post_header");
-        $this->load->view("nav");
-        $this->load->view("post/new_post"); 	
-		$this->load->view("footer");
-	}
-	*/
-	public function eliminar($id_post) {
-
+		$where = array(
+			'id_post' => $id_post_eliminar,
+		);
+		$this->consultas->delete_table('est_post',$where);
+		$this->consultas->delete_table('est_post_autor',$where);
+		$this->consultas->delete_table('est_post_poblacion',$where);
+		echo 'exito';
 	}
 	
 	public function get_poblacion_sel()
@@ -451,15 +375,47 @@ class Blog extends CI_Controller
 		}
 
 		$data["titulo"] = "Lista de publicaciones";
-		$data["posts"] =  $this->consultas->get_list_post();
+		//$data["posts"] =  $this->consultas->get_list_post();
 		$data["user"] = $this->session->userdata('username');
-		$data["onLoad"] = '';
+		$data["onLoad"] = 'onload="get_list_post()"';
 
 		$this->load->view("head",$data);
 
 		$this->load->view("nav");
 		$this->load->view("post/list_post"); 	
 		$this->load->view("footer");
+	}
+
+	public function get_lista_post() {
+		$lista_post = $this->consultas->get_list_post();
+
+		if(is_null($lista_post)) {
+			echo '';
+		} else {
+			foreach ($lista_post as $post) {
+			?>
+			<tr>
+                <td><?= $post->titulo; ?></td>
+                <td><?= $post->tema; ?></td>
+                <td><?= $post->autor; ?></td>
+                <td><?= $post->carrera; ?></td>
+                <td><?= $post->poblacion; ?></td>
+                <td><?= $post->descripcion; ?></td>
+                <td><?= $post->fecha; ?></td>
+                <td><?= $post->activo=='t'?'Activo':'No Activo'; ?></td>
+                <td><?= $post->permite_comentario=='t'?'Permite':'No Permite'; ?></td>
+                <td>
+                    <a class="btn btn-success btn-sm" href="<?= base_url() ?>blog/post/<?= $post->id_post ?>" role="button">
+                    <i class="fa fa-pencil"></i>
+                    </a>
+                    <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modalMensajes" role="button" onclick="seguro_del('<?= $post->id_post; ?>','<?= $post->titulo; ?>')" ><i class="fa fa-times"></i>
+                    </button>
+                </td>
+            </tr>
+            <?php
+			}
+		}
+
 	}
 	
 	public function comentarios() {
@@ -472,9 +428,133 @@ class Blog extends CI_Controller
 		$data["user"] = $this->session->userdata('username');
 		$data["onLoad"] = '';
 
+		
+
 		$this->load->view("head",$data);
 		$this->load->view("nav");
 		$this->load->view("post/coments"); 	
 		$this->load->view("footer");
+	}
+
+	public function get_comentarios() {
+		/*
+		Esta variable tiene 3 valores 0 1 2
+		0	indica que debe devolver todos los comentario
+		1	indica que debe devolver solo los comentarios no verificados
+		2	indica que debe devolver solo los comentarios verificados
+		*/
+		$tipo  = $this->input->post('tipo');
+		$comentarios = $this->consultas->get_comentarios($tipo);
+
+		echo json_encode($comentarios);
+	}
+
+	public function get_comentarios_sp() { 
+		//parametro inicio
+		//parametro fin
+		//parametro busqueda 
+
+		$type  = $this->input->post('tipo');
+		$start = $this->input->post('start');
+		$length = $this->input->post('length');
+		$search = $this->input->post('search')['value'];
+
+		$array_res = $this->consultas->get_comentarios_sp($type,$start,$length,$search);
+		$total_datos = $array_res['numDataTotal'];
+		$resultado = $array_res['datos'];
+
+		$datos = array();
+		foreach ($resultado->result_array() as $row) {
+			$array = array();
+			$array['id_comentario'] = $row['id_comentario'];
+			$array['titulo'] = $row['titulo'];
+			$array['cod_ceta'] = $row['cod_ceta'];
+			$array['nombre'] = $row['nombre'];
+			$array['contenido'] = $row['contenido'];
+			$array['fecha'] = $row['fecha'];
+			$array['es_respuesta'] = $row['es_respuesta'];
+			$array['verificado'] = $row['verificado'];
+			$array['denuncia'] = $row['denuncia'];
+
+			$datos[] = $array;
+		}
+		
+		$total_datos_obtenidos = $resultado->num_rows();
+
+		$json_data = array(
+			"draw" 				=>intval($this->input->post('draw')),	//
+			"recordsTotal"		=>intval($total_datos_obtenidos),	 	//Cantidad de registros obtenido   
+			"recordsFiltered"	=>intval($total_datos),					//Cantidad de registros Permite dibuar paginacion
+			"data"				=>$datos						//Pasa los datos en si
+		);
+		echo json_encode($json_data);
+	}
+
+	public function aprobarComentario() {
+		$id_comentario = $this->input->post('id_comentario');
+		$data = array(
+			'verificado' => TRUE
+		);
+		$success = $this->consultas->update_table('est_post_comentario',$data,'id_comentario='.$id_comentario);
+		if($success) {
+			echo 'exito';
+		} else {
+			echo 'fallo';
+		}
+	}
+
+	public function desaprobarComentario() {
+		$id_comentario = $this->input->post('id_comentario');
+		$data = array(
+			'verificado' => FALSE
+		);
+		$success = $this->consultas->update_table('est_post_comentario',$data,'id_comentario='.$id_comentario);
+		if($success) {
+			echo 'exito';
+		} else {
+			echo 'fallo';
+		}
+	}
+
+	public function eliminarComentario() {
+
+		$id_comentario = $this->input->post('id_comentario');
+		
+		$where = array(
+			'id_comentario' => $id_comentario,
+		);
+		$this->consultas->delete_table('est_post_comentario',$where);
+
+		echo 'exito';
+	}
+
+	public function bloquearEstudiante() {
+
+		$cod_ceta = $this->input->post('cod_ceta');
+
+		$data = array(
+			'bloqueado' => TRUE
+		);
+		$success = $this->consultas->update_table('est_password',$data,'cod_ceta='.$cod_ceta);
+		if($success) {
+			echo 'exito';
+		} else {
+			echo 'fallo';
+		}
+	}
+
+	public function desbloquearEstudiante() {
+
+		$cod_ceta = $this->input->post('cod_ceta');
+
+		$data = array(
+			'bloqueado' => FALSE
+		);
+		$success = $this->consultas->update_table('est_password',$data,'cod_ceta='.$cod_ceta);
+		if($success) {
+			echo 'exito';
+		} else {
+			echo 'fallo';
+		}
 	}
 }

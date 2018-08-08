@@ -23,7 +23,7 @@
                     <div class="card-header">
                         <strong>Formulario de Creación</strong>
                     </div>
-                    <form method="post" action="<?= base_url() ?>blog/registrar">
+                    <form method="post" id="form_registro" action="<?= base_url() ?>blog/registrar">
                     <input type="hidden" id="id_post_modificado"  name="id_post_modificado" value="<?= isset($post)?$post->id_post:'0'; ?>">
                     <div class="card-body card-block">
                             <div class="form-group">
@@ -50,7 +50,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="carrera" class=" form-control-label">Carrera</label>
-                                <select class="form-control" id="cod_carrera" name="carrera">
+                                <select class="form-control" id="carrera" name="carrera">
                                 <?php
                                 if($carreras!=null)
                                 {   
@@ -149,7 +149,7 @@
 
         </div> <!-- .content -->
                         
-        <div class="modal fade show" id="modalMensajes" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true" data-backdrop="true" data-keyboard="true">
+        <div class="modal fade show" id="modalMensajes" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true" data-backdrop="static" data-keyboard="false">
             <div class="modal-dialog " role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -164,7 +164,7 @@
                     <div class="modal-footer">
                         <button type="button" id="btn_modal_aceptar" class="btn btn-success" data-dismiss="modal">Aceptar</button>
                         <button type="button" id="btn_modal_cancelar" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-                        <button type="button" id="btn_modal_continuar" class="btn btn-primary" data-dismiss="modal">Agregar Otro</button>
+                        <button type="button" id="btn_modal_nuevo" class="btn btn-primary" data-dismiss="modal">Nuevo Post</button>
                         <button type="button" id="btn_modal_ver_lista" class="btn btn-primary" data-dismiss="modal">Ver Lista</button>
                     </div>
                 </div>
@@ -172,6 +172,23 @@
         </div>
 
 <script >
+
+
+$('#btn_cancelar').click(function () {
+    $(location).attr('href',baseurl+'blog/lista');
+});
+
+$('#btn_limpiar').click(function () {
+    $(location).attr('href',baseurl+'blog/post<?= isset($post)?'/'.$post->id_post:''; ?>');
+});
+$("#btn_modal_nuevo").click(function () {
+    $(location).attr('href',baseurl+'blog/post');
+});
+
+$("#btn_modal_ver_lista").click(function () {
+    $(location).attr('href',baseurl+'blog/lista');
+});
+
 
 var titulo_existe=false;
 $('#titulo').blur(function () {
@@ -184,10 +201,10 @@ $('#titulo').blur(function () {
         {   
             titulo:$('#titulo').val(),
             id_post_modificado:$('#id_post_modificado').val(),
-            cod_carrera:$('#cod_carrera').val(),
+            cod_carrera:$('#carrera').val(),
         }, 
         function(data){
-            console.log("el data es: "+data);
+            console.log("comprobar titulo ajax es: "+data);
             if(data=='<div style="display:none">1</div>')
             {
                 $("#titulo" ).removeClass("is-invalid");
@@ -204,6 +221,7 @@ $('#titulo').blur(function () {
         });
     }
 })
+
 function rectificar_(cadena_nombre) {
     cadena= $('#'+cadena_nombre).val().trim().split(' ');
     corregido='';
@@ -217,31 +235,18 @@ function rectificar_(cadena_nombre) {
     $('#'+cadena_nombre).val(corregido.trim());
 }
 
-
-mensage = {
-    cabecera    :'<h1><span class="fa fa-exclamation-triangle"></span></h1><span> <strong>¡Cuidado!</strong> Los siguientes campos se encuentran incompletos:</span><ul class="text-left" style="padding-left: 15px;">',
-    pie         :'</ul> No podrá proseguir si no corrige estos errores.',
-    titulo      : '<li> Debe introducir un título para el Comunicado.</li>',
-    titulo_existe      : '<li> EL título introducido ya existe para la carrera seleccionada.</li>',
-    seleccion   : '<li> Seleccione a qué población irá destinado el Comunicado.</li>',
-    contenido   : '<li> Intoruzca un contenido para el Comunicado.</li>',
-    exito       : '<h1><span class="fa fa-exclamation-triangle"></span></h1><span class="text-left"> Se registró correctamente el Comunicado.</span>',
-    no_exito  : '<h1><span class="fa fa-exclamation-triangle"></span></h1><span class="text-left"> No se pudo registrar el Comunicado. Comuníquese con el Administrador del sistema.</span>',
-    alerta_existe_titulo  : '<h1><span class="fa fa-exclamation-triangle"></span></h1><span class="text-left"> El título <strong id="titulo_intro"></strong> ya existe registrado en la  <strong>Base de Datos</strong>, por favor ingrese otro titulo.</span>',
-    };
-
 function mensajes(tipo, data) {
     $("#btn_modal_aceptar").hide();
     $("#btn_modal_cancelar").hide();
-    $("#btn_modal_continuar").hide();
+    $("#btn_modal_nuevo").hide();
     $("#btn_modal_ver_lista").hide();
-    /*    
+       
     if(tipo=='alerta_error')
     {
         $("#contenido_mensages").attr("class","alert alert-warning text-center");
         $('#contenido_mensages').html(data);
                 $('#modalTitle').html('Faltan Datos');
-                $("#btn_cancelar").show();
+                $("#btn_modal_aceptar").show();
     }
     if(tipo=='exito')
     {
@@ -249,8 +254,18 @@ function mensajes(tipo, data) {
         $('#contenido_mensages').html(mensage.exito);
                 $('#modalTitle').html('Registro exitoso');
                 $("#btn_cancelar").hide();
-                $("#btn_continuar").show();
-                $("#btn_ver_lista").show();    
+                $("#btn_modal_nuevo").show();
+                $("#btn_modal_ver_lista").show();    
+    
+    }
+    if(tipo=='exito_modificacion')
+    {
+        $("#contenido_mensages").attr("class","alert alert-success text-center");
+        $('#contenido_mensages').html(mensage.exito_modificacion);
+                $('#modalTitle').html('Modificación exitosa');
+                $("#btn_cancelar").hide();
+                $("#btn_modal_nuevo").show();
+                $("#btn_modal_ver_lista").show();    
     
     }
     if(tipo=='no_exito')
@@ -258,9 +273,8 @@ function mensajes(tipo, data) {
         $("#contenido_mensages").attr("class","alert alert-danger text-center");
         $('#contenido_mensages').html(mensage.no_exito);
                 $('#modalTitle').html('Error al registrar');
-                $("#btn_cancelar").show();
+                $("#btn_modal_cancelar").show();
     }
-    */
     if(tipo=='alerta_existe_titulo')
     {
         $("#contenido_mensages").attr("class","alert alert-danger text-center");
@@ -270,21 +284,11 @@ function mensajes(tipo, data) {
                 $("#btn_modal_aceptar").show();
     }
 
-    //$('#modalMensajes').modal('show');
-    //$('.modal-backdrop').addClass("show");
     $('#btn_mensaje').click();    
-    /*
-    $( "#btn_modal_aceptar" ).click(function() {
-        $( "#titulo" ).focus();
-    });
-    */
  }
     
-
+//Cuando cambia el selecte de tipo de poblacion actualiza la poblacion a seleccionar
 $('#select_poblacion').change(function () {
-    get_poblacion_sel();
-});
-function get_poblacion_sel() {
     if($('select[name="select_poblacion"] option:selected').text()=='Todos') {
         $('#label_opcion').html('Selecciono todos los estudiantes');
         $('#grupo-sel-container').hide();
@@ -301,21 +305,12 @@ function get_poblacion_sel() {
     $.post(baseurl+"Comunicados/get_poblacion_sel",
         {   
             tipo_sel:$('#select_poblacion').val(),
-            carrera:$('#cod_carrera').val(),
+            carrera:$('#carrera').val(),
         }, 
         function(data){
             $('#grupo_sel').html(data);
             $(".standardSelect").trigger("chosen:updated");            
         });
-}
-
-$('#btn_cancelar').click(function () {
-    $(location).attr('href',baseurl+'blog/lista');
-});
-
-
-$('#btn_limpiar').click(function () {
-    $(location).attr('href',baseurl+'blog/post<?= isset($post)?'/'.$post->id_post:''; ?>');
 });
 
 jQuery(document).ready(function() {
@@ -327,52 +322,142 @@ jQuery(document).ready(function() {
 });
 
 jQuery(document).ready(function() {
-    //alert(jQuery("#error-alert").length);
-    if(jQuery("#error-alert").children().length>1) {
-        jQuery("#error-alert").show();
-    } else {
-        jQuery("#error-alert").hide();
-    }
 
     if($('select[name="select_poblacion"] option:selected').text()=='Todos') {
         $('#grupo-sel-container').hide();
     } else {
         $('#grupo-sel-container').show();
     }
+    $('#docente_chosen ul').addClass("form-control");
+    $('#grupo_sel_chosen ul').addClass("form-control");
     
-
     CKEDITOR.replace('editor1', {
         language: 'es'
     });
+
+    $("#form_registro").submit(function(e){
+        e.preventDefault();
+
+        if(validar()) {
+            $.ajax({
+                url: $(this).attr("action"),
+                type: $(this).attr("method"), 
+                data: {
+                    titulo:$('#titulo').val()
+                    ,tema:$('#tema').val()
+                    ,'docente[]':$("#docente.standardSelect").chosen().val()
+                    ,carrera:$('#carrera').val()
+                    ,select_poblacion:$('#select_poblacion').val()
+                    ,'grupo_sel[]':$("#grupo_sel.standardSelect").chosen().val()
+                    ,editor1:CKEDITOR.instances['editor1'].getData()
+                    ,descripcion:$("#descripcion").val()
+                    ,coment:$('#coment').prop('checked')
+                    ,activo:$('#activo').prop('checked')
+                    ,id_post_modificado:$("#id_post_modificado").val()
+                },
+                success:function(data){ 
+                    console.log("success ajax reg es: "+data+" eso");
+
+                    if(data=='exito') {
+                        if($("#id_post_modificado").val() != '0') {
+                            mensajes('exito_modificacion');
+                        } else {
+                            mensajes('exito');
+                        }
+                    }
+                    else {
+                        mensajes('no_exito');
+                    }
+                }
+            }); 
+            
+        }
+        
+        return false;
+    });
+
 });
 
-/*
-$(document).ready(function(){
-    
-    $('#titulo').focusout( function(){
-        if( $("#titulo").val().length < 2)
+function limpiar_errores() {
+    $("#titulo" ).removeClass("is-invalid");
+    $("#tema" ).removeClass("is-invalid");
+    $('#docente_chosen ul').removeClass("is-invalid-chosen");
+    $('#grupo_sel_chosen ul').removeClass("is-invalid-chosen");
+    $('#cke_editor1').removeClass("is-invalid-chosen");
+    $('#descripcion').removeClass("is-invalid");
+}
+
+mensage = {
+    cabecera    :'<h1><span class="fa fa-exclamation-triangle"></span></h1><span> <strong>¡Cuidado!</strong> Los siguientes campos se encuentran incompletos:</span><ul class="text-left" style="padding-left: 15px;">',
+    pie         :'</ul> No podrá proseguir si no corrige estos errores.',
+    titulo      : '<li> Debe introducir un título para el Post.</li>',
+    titulo_existe      : '<li> EL título introducido ya esta registrado en la base de datos.</li>',
+    tema        : '<li> Debe introducir el tema para el Post.</li>',
+    seleccion_doc   : '<li> Debe seleccionar como minimo un autor.</li>',
+    seleccion_grup  : '<li> Debe seleccionar por lo menos un elemento de la población.</li>',
+    contenido   : '<li> Debe introducir contenido para el Post.</li>',
+    descripcion   : '<li> Debe introducir una descripcion del Post.</li>',
+    exito       : '<h1><span class="fa fa-exclamation-triangle"></span></h1><span class="text-left"> Se registró correctamente el Post.</span>',
+    exito_modificacion       : '<h1><span class="fa fa-exclamation-triangle"></span></h1><span class="text-left"> Se modificó correctamente el Post.</span>',
+    no_exito  : '<h1><span class="fa fa-exclamation-triangle"></span></h1><span class="text-left"> No se pudo registrar el Post. Comuníquese con el Administrador del sistema.</span>',
+    alerta_existe_titulo  : '<h1><span class="fa fa-exclamation-triangle"></span></h1><span class="text-left"> El título <strong id="titulo_intro"></strong> ya existe registrado en la  <strong>Base de Datos</strong>, por favor ingrese otro titulo.</span>',
+    };
+
+function validar() {
+    limpiar_errores();
+    control=true;
+    alerta=mensage.cabecera;
+    if($('#titulo').val().length<=0)
+    {
+        $("#titulo" ).addClass("is-invalid");
+        alerta+=mensage.titulo;
+        control=false;
+    }
+    if(titulo_existe)
+    {
+        $("#titulo" ).addClass("is-invalid");
+        alerta+=mensage.titulo_existe;
+        control=false;
+    }
+    if($('#tema').val().length<=0)
+    {
+        $("#tema" ).addClass("is-invalid");
+        alerta+=mensage.tema;
+        control=false;
+    }
+
+    if($("#docente_chosen .search-choice").length<=0)
+    {
+        $('#docente_chosen ul').addClass("is-invalid-chosen");
+        alerta+=mensage.seleccion_doc;
+        control=false;
+    }
+
+    if($('select[name="select_poblacion"] option:selected').text()!='Todos') {
+        if($("#grupo_sel_chosen .search-choice").length<=0)
         {
-            $('#msgTitulo').html("<span style='color:#f00'>El Titulo debe contener 10 carácteres mínimo</span>");
-        }else{
-            var titulo = $('#titulo').val();
-            $.ajax({
-                type: "POST",
-                url: "http://localhost/admin/nuevo_post/comprobar_titulo_ajax",
-                data: "titulo="+$('#titulo').val(),
-                beforeSend: function(){
-                    $('#msgTitulo').html('<span>Verificando...</span>');
-                },
-                success: function( respuesta ){
-                     if(respuesta == '<div style="display:none">1</div>')
-                        $('#msgTitulo').html("<span style='color:#0f0'>Titulo Disponible</span>");
-                    else
-                        $('#msgTitulo').html('<span style="color:#f00">El título ' + titulo +' ya está registrado en la Base de datos</span>');
-                }
-           
-            });
-            return false;  
+            $('#grupo_sel_chosen ul').addClass("is-invalid-chosen");
+            alerta+=mensage.seleccion_grup;
+            control=false;
         }
-    });
-});
-*/
+    }
+
+    if(CKEDITOR.instances['editor1'].getData().length<=0)
+    {
+        $('#cke_editor1').addClass("is-invalid-chosen");
+        alerta+=mensage.contenido;
+        control=false;
+    }
+
+    if($('#descripcion').val().length<=0)
+    {
+        $("#descripcion" ).addClass("is-invalid");
+        alerta+=mensage.descripcion;
+        control=false;
+    }
+
+    if(!control)
+        mensajes('alerta_error',alerta+mensage.pie);
+   return control;
+}
 </script>

@@ -1,6 +1,11 @@
 </head>
 <body <?=$onLoad?>>
-
+    <?php
+    if(!$this->session->userdata('username'))
+    {
+        redirect(base_url().'admin');
+    }
+    ?>
 
         <!-- Left Panel -->
 
@@ -22,7 +27,7 @@
                     </li> -->
                     <h3 class="menu-title">Material Académico</h3><!-- /.menu-title -->
                     <li>
-                        <a href="#"> <i class="menu-icon ti-write"></i>Nuevo </a>
+                        <a href="<?= base_url()?>/material/material/nuevo"> <i class="menu-icon ti-write"></i>Nuevo </a>
                     </li>
                     <li>
                         <a href="#"> <i class="menu-icon ti-view-list"></i>Listado</a>

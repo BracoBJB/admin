@@ -160,6 +160,7 @@ class Consultas extends CI_Model
 	public function get_docentes($todos = FALSE) {
 
 		$this->db->select("CONCAT(nombre,' ', apellido_p,' ', apellido_m) as name,cod_docente");
+		$this->db->order_by("nombre,apellido_p,apellido_m");
 		if(!$todos) {
 			$this->db->where('activo',TRUE);
 		}
@@ -290,7 +291,14 @@ class Consultas extends CI_Model
 		$this->db->order_by("ep.fecha", "desc");
 		$query = $this->db->get();
 
-		return $query->result();
+		if($query->num_rows()>0)
+		{
+			return $query->result();
+		}
+		else
+		{
+			return null;
+		}	
 	}
 	public function get_post($id_post) {
 		$this->db->select('ep.id_post,ep.titulo,ep.tema,ep.carrera,ep.contenido,ep.descripcion,ep.fecha,ep.activo,ep.permite_comentario');
@@ -352,6 +360,93 @@ class Consultas extends CI_Model
 		$this->db->where('id_poblacion',$id_poblacion);
 		$query = $this->db->get('est_post_poblacion');
 		return $query->result();
+	}
+
+	public function get_comentarios($tipo) {
+		$sql = "select epc.id_comentario,ep.titulo,e.nombre,epc.contenido,epc.fecha,COALESCE(epc.id_respuesta,0) as es_respuesta,epc.verificado
+		from est_post_comentario as epc
+		inner join est_post as ep on ep.id_post = epc.id_post
+		inner join (
+			select CONCAT(nombres,' ',ap_paterno,' ',ap_materno) as nombre,cod_ceta
+			from estudiante
+		) as e on e.cod_ceta = epc.cod_ceta ";
+
+
+		if($tipo == '1') {
+			$sql.='where epc.verificado = FALSE';
+		} else {
+			if($tipo == '2') {
+				$sql.='where epc.verificado = TRUE';
+			}
+		}
+
+		$consulta=$this->db->query($sql);
+		return $consulta->result();
+	}
+
+	public function get_comentarios_sp($type,$start,$length,$search) {
+
+		$full_query_count ="select count(1) as counted from (
+			%s
+		) as tmp 
+		%s";
+
+		$query_records_pag ="select * from (
+			%s
+		) as tmp 
+		%s";
+
+		$query_search = '';
+		if(!is_null($search) && !empty($search)) {
+			$query_search = " where id_comentario LIKE '%{$search}%' or
+			titulo LIKE '%{$search}%' or
+			nombre LIKE '%{$search}%' or
+			contenido LIKE '%{$search}%' or
+			fecha LIKE '%{$search}%' or
+			es_respuesta like '%{$search}%' or
+			verificado like '%{$search}%' or
+			denuncia like '%{$search}%' ";
+		}
+
+
+		$sql = "select CAST(epc.id_comentario AS text),ep.titulo,e.nombre,e.cod_ceta,epc.contenido,CAST(epc.fecha AS text)
+		, case when epc.id_respuesta is null then 'No' else cast(epc.id_respuesta as text) end as es_respuesta
+		, case when epc.verificado then 'Aprobado' else 'Pendiente' end as verificado
+		, case when epc.denuncia then 'Si' else 'No' end as denuncia
+		from est_post_comentario as epc
+		inner join est_post as ep on ep.id_post = epc.id_post
+		inner join (
+			select CONCAT(nombres,' ',ap_paterno,' ',ap_materno) as nombre,cod_ceta
+			from estudiante
+		) as e on e.cod_ceta = epc.cod_ceta ";
+
+		if($type == '1') {
+			$sql.=' where epc.verificado = FALSE ';
+		} else {
+			if($type == '2') {
+				$sql.=' where epc.verificado = TRUE ';
+			}
+		}
+		
+		$consulta_count = $this->db->query(sprintf($full_query_count,$sql,$query_search));
+		$query_num_record = $consulta_count->row()->counted;
+
+		if(isset($colum_order) and isset($col_dir)) {
+			$query_search.=" order by {$colum_order} {$col_dir}";
+		}
+
+		if($length != '-1') {
+			
+			$query_search.=" limit $length OFFSET $start ";
+		}
+
+		$consulta=$this->db->query(sprintf($query_records_pag,$sql,$query_search));
+		$retornar = array(
+			'numDataTotal' => $query_num_record,
+			'datos' => $consulta
+		);
+
+		return $retornar;
 	}
 }
 
