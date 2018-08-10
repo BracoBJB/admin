@@ -66,7 +66,7 @@ class Material extends CI_Controller
 		}
 		$usuario=$this->session->userdata('username');		
 		$data= array('titulo'=> 'Nuevo Material', 'header_links' => 'post/new_post_header','script' => 'post/new_post_script');
-		$onload='onload=""';
+		$onload='onload="get_materias();"';
 		$this->load->view("head",$data);
 		$consulta_carreras=$this->consultas->get_all_carreras();
 		$docentes=$this->consultas->get_docentes();
@@ -78,6 +78,65 @@ class Material extends CI_Controller
 		$this->load->view("material/nuevo_material");
 		$this->load->view("footer");
 	}
+	public function subir()
+	{
+		$archivo = $_FILES['archivo'];
+		$nombre = strtolower($archivo['name']);
+		$temporal = $archivo['tmp_name'];
+		$partesNombre = explode('.', $nombre);
+		$extensionArchivo = end($partesNombre);
+		$nuevoNombre = rand(1000000000, 9999999999). '.' . $extensionArchivo;
+		move_uploaded_file($temporal,$_SERVER['DOCUMENT_ROOT'].'/admin/plantillas/archivos/'.$nuevoNombre);
+
+	}
+	public function get_materias()
+	{
+		$cod_pensum=$_POST['cod_pensum'];
+		$cod_docente=$_POST['cod_docente'];
+		$gestion=$this->consultas->get_last_gestion()->row()->valor;
+		$sql="SELECT DISTINCT nombre_materia_oficial, materia.sigla_materia, nivel_materia FROM asignacion_docente INNER JOIN materia ON materia.cod_pensum = asignacion_docente.cod_pensum AND materia.sigla_materia = asignacion_docente.sigla_materia WHERE asignacion_docente.cod_docente = '$cod_docente' AND asignacion_docente.gestion = '$gestion' AND asignacion_docente.cod_pensum = '$cod_pensum' ORDER BY nivel_materia, materia.sigla_materia";
+		$get_materias=$this->consultas->consulta_SQL($sql);
+		$resultado='';
+		if($get_materias!=null)
+		{
+			foreach ($get_materias -> result() as $fila) {
+				$resultado.='<option value="'.$fila->sigla_materia.'">'.$fila->nombre_materia_oficial.'</option>';
+			}
+		}
+		else
+			$resultado.='<option value="0">No hay materias</option>';
+		echo $resultado;
+	}
+	public function get_grupo()
+	{
+		$cod_pensum=$_POST['cod_pensum'];
+		$cod_docente=$_POST['cod_docente'];
+		$sigla_materia=$_POST['sigla_materia'];
+		$gestion=$this->consultas->get_last_gestion()->row()->valor;
+		
+		$sql="SELECT DISTINCT cod_grupo FROM asignacion_docente INNER JOIN materia ON materia.cod_pensum = asignacion_docente.cod_pensum AND materia.sigla_materia = asignacion_docente.sigla_materia WHERE cod_docente = '$cod_docente' AND gestion = '$gestion' AND asignacion_docente.cod_pensum = '$cod_pensum' AND asignacion_docente.sigla_materia = '$sigla_materia' ORDER BY cod_grupo";
+		
+		$get_grupos=$this->consultas->consulta_SQL($sql);
+		$resultado='';
+		if($get_grupos!=null)
+		{
+			foreach ($get_grupos -> result() as $fila) {
+				$resultado.='<option value="'.$fila->cod_grupo.'">'.$fila->cod_grupo.'</option>';
+			}
+		}
+		else
+			$resultado.='<option value="0">No hay grupos</option>';
+		echo $resultado;
+	}
+	public function verificar_titulo()
+	{
+		$titulo=$_POST['titulo'];
+		$cod_carrera=$_POST['cod_carrera'];
+		$gestion=$this->consultas->get_last_gestion()->row()->valor;
+		echo $this->consultas->existe_titulo_material($titulo,$cod_carrera,$gestion);
+	}
+
+
 	public function get_poblacion_sel()
 	{
 		$tipo_sel=$_POST['tipo_sel'];
@@ -250,10 +309,5 @@ class Material extends CI_Controller
 		$this->load->view("comunicados/nuevos_comunicados");
 		$this->load->view("footer");
 	}
-	public function verificar_titulo()
-	{
-		$titulo=$_POST['titulo'];
-		$cod_carrera=$_POST['cod_carrera'];
-		echo $this->consultas->existe_titulo($titulo,$cod_carrera);
-	}	
+		
 }

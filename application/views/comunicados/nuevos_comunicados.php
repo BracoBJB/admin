@@ -369,7 +369,7 @@ mensage = {
     titulo      : '<li> Debe introducir un título para el Comunicado.</li>',
     titulo_existe      : '<li> EL título introducido ya existe para la carrera seleccionada.</li>',
     seleccion   : '<li> Seleccione a qué población irá destinado el Comunicado.</li>',
-    contenido   : '<li> Intoruzca un contenido para el Comunicado.</li>',
+    contenido   : '<li> Introduzca un contenido para el Comunicado.</li>',
     exito       : '<h1><span class="fa fa-exclamation-triangle"></span></h1><span class="text-left"> Se registró correctamente el Comunicado.</span>',
     no_exito  : '<h1><span class="fa fa-exclamation-triangle"></span></h1><span class="text-left"> No se pudo registrar el Comunicado. Comuníquese con el Administrador del sistema.</span>',
     alerta_existe_titulo  : '<h1><span class="fa fa-exclamation-triangle"></span></h1><span class="text-left"> El título <strong id="titulo_intro"></strong> ya existe registrado en la carrera: <strong>'+$('#cod_carrera option:selected').text()+'</strong>, verifique sus datos.</span>',

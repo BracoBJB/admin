@@ -157,6 +157,19 @@ class Consultas extends CI_Model
 		
 	}
 
+	public function get_last_gestion()
+	{
+		$consulta=$this->db->query("SELECT valor from parametros_economicos WHERE parametro = 'gestion_cobro'");
+		if($consulta->num_rows()>0)
+		{
+			return $consulta;
+		}
+		else
+		{
+			return null;
+		}		
+		
+	}
 	public function get_docentes($todos = FALSE) {
 
 		$this->db->select("CONCAT(nombre,' ', apellido_p,' ', apellido_m) as name,cod_docente");
@@ -255,6 +268,17 @@ class Consultas extends CI_Model
 			);
 		$this->db->select('titulo')->where($where);
 		$consulta = $this->db->get('est_avisos');
+
+		return $consulta->num_rows();
+	}
+	public function existe_titulo_material($titulo,$carrera, $gestion) {
+		$where = array(
+			'titulo' => $titulo,
+			'carrera' => $carrera,
+			'gestion' => $gestion,
+			);
+		$this->db->select('titulo')->where($where);
+		$consulta = $this->db->get('est_material');
 
 		return $consulta->num_rows();
 	}
