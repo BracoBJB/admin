@@ -23,8 +23,8 @@
                                     <?php
                                         if($carreras!=null)
                                         {   $carrera_aux='';
-                                            if ( isset($get_aviso))
-                                                 $carrera_aux=$get_aviso->row()->carrera;
+                                            if ( isset($get_material))
+                                                 $carrera_aux=$get_material->row()->carrera;
                                             foreach ($carreras -> result() as $fila) 
                                             {
                                                 if($carrera_aux==$fila->cod_carrera)
@@ -42,10 +42,15 @@
                                 <?php if ( isset($docentes))
                                 {
                                         echo '<option value="0" >Seleccione un docente </option>';
-
+                                    $docente_aux='';
+                                            if ( isset($get_material))
+                                                 $docente_aux=$get_material->row()->cod_docente;
                                     foreach($docentes  -> result() as $doc)
                                     {
-                                        echo '<option value="'.$doc->cod_docente.'" >'.$doc->name.' </option>';
+                                        if($docente_aux==$doc->cod_docente)
+                                            echo '<option value="'.$doc->cod_docente.'" selected="true">'.$doc->name.' </option>';
+                                        else
+                                            echo '<option value="'.$doc->cod_docente.'" >'.$doc->name.' </option>';
                                     }
                                 }
                                 else
@@ -68,7 +73,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="titulo" class=" form-control-label">Titulo<span  class="fa fa-spinner fa-spin " id="spinner" style="display:none;"></span ></label>
-                                <input type="text" id="titulo" name="titulo" placeholder="Ingrese el título del comunicado" class="form-control" value="<?php if ( isset($get_aviso)) echo $get_aviso->row()->titulo; ?>">
+                                <input type="text" id="titulo" name="titulo" placeholder="Ingrese el título del material" class="form-control" value="<?php if ( isset($get_material)) echo $get_material->row()->titulo; ?>">
                             </div>
                             <div class="form-group">
                                 <label class="switch switch-3d switch-info mr-3"><input type="checkbox" class="switch-input" checked="true" id="archivo"> <span class="switch-label"></span> <span class="switch-handle"></span></label><label class="control-label col-sm-4" for="archivo"> Incluir archivo</label>
@@ -76,7 +81,7 @@
                             <div class="input-group">
                                <label class="input-group-prepend ">
                                     <span id="btn_archivo" class="input-group-btn btn btn-primary ">
-                                        Seleccione un archivo&hellip; <input type="file" name="file" id="file" style="display: none;">
+                                        Seleccione un archivo&hellip; <span  class="fa fa-spinner fa-spin " id="spinner_file" style="display:none;"></span ><input type="file" name="file" id="file" style="display: none;">
                                     </span>
                                 </label>
                                 <input type="text" class="form-control" id="leyenda_files" readonly style="height: 38px" >
@@ -84,7 +89,7 @@
                             <div class="form-group">
                                 <label for="editor1" class="form-control-label">Contenido</label>
                                 <textarea name="editor1" id="editor1" rows="4" cols="80">
-                                <?php if ( isset($get_aviso)) echo $get_aviso->row()->descripcion; ?>
+                                <?php if ( isset($get_material)) echo $get_material->row()->contenido; ?>
                                 </textarea>
                             </div>                            
                         </form>
@@ -128,7 +133,7 @@
                         <div class="card-body" id="progres_bar" style="display: none;">
                             <p class="muted">Cargando archivo:</p>
                           <div class="progress mb-2">
-                              <div id="barra" class="progress-bar bg-info" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">50%</div>
+                              <div id="barra" class="progress-bar bg-info" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
                           </div>                          
                         </div>
                     </div>
@@ -160,10 +165,9 @@
       }
       return peticion;
     }
-    
-
-
 var titulo_existe=false;
+var con_archivo=true;
+var size_archivo=false;
 var id_sel="<?php if(isset($id_sel)) echo $id_sel; else echo '';?>";
 $('#docente').change(function () {
     get_materias();
@@ -197,9 +201,22 @@ function get_grupo() {
 }
 function filePreview(input) {
     if (input.files && input.files[0]) {
+        $('#spinner_file').show();
         var reader = new FileReader();
         reader.onload = function (e) {
-            $('#leyenda_files').val(input.files[0].name);
+            file_size=(input.files[0].size/1024/1024).toFixed(2);
+
+            $('#leyenda_files').val(input.files[0].name+' ('+file_size+' MB)');
+            if(file_size>128)
+            {
+                mensajes('archivogrande');
+                size_archivo=true;
+            }
+            else
+                size_archivo=false;
+
+            $('#spinner_file').hide();
+
         }
         reader.readAsDataURL(input.files[0]);
     }
@@ -209,11 +226,13 @@ $("#archivo").change(function () {
     {
         $("#btn_archivo" ).removeClass("btn-secondary").addClass("btn-primary");
         $("#file").attr('disabled',false);
+        con_archivo=true;
     }
     else
     {
         $("#btn_archivo" ).removeClass("btn-primary").addClass("btn-secondary");
         $("#file").attr('disabled',true);
+        con_archivo=false;
     }
 
 });
@@ -223,31 +242,31 @@ $("#file").change(function () {
 
 $('#titulo').blur(function () {
     rectificar_('titulo');
-    if($('#titulo').val().length>0)
-    {
-        $('#titulo').prop('disabled', true);
-        $('#spinner').show();
-        $.post(baseurl+"material/material/verificar_titulo",
-        {   
-            titulo:$('#titulo').val(),
-            cod_carrera:$('#cod_carrera').val(),
-        }, 
-        function(data){
-            if(data=='0')
-            {
-                $("#titulo" ).removeClass("is-invalid");
-                titulo_existe=false;
-            }
-            else
-            {
-                $("#titulo" ).addClass("is-invalid");
-                mensajes('alerta_existe_titulo',$('#titulo').val());
-                titulo_existe=true;
-            }
-            $('#titulo').prop('disabled', false);
-            $('#spinner').hide();
-        });
-    }
+    // if($('#titulo').val().length>0)
+    // {
+    //     $('#titulo').prop('disabled', true);
+    //     $('#spinner').show();
+    //     $.post(baseurl+"material/material/verificar_titulo",
+    //     {   
+    //         titulo:$('#titulo').val(),
+    //         cod_carrera:$('#cod_carrera').val(),
+    //     }, 
+    //     function(data){
+    //         if(data=='0')
+    //         {
+    //             $("#titulo" ).removeClass("is-invalid");
+    //             titulo_existe=false;
+    //         }
+    //         else
+    //         {
+    //             $("#titulo" ).addClass("is-invalid");
+    //             mensajes('alerta_existe_titulo',$('#titulo').val());
+    //             titulo_existe=true;
+    //         }
+    //         $('#titulo').prop('disabled', false);
+    //         $('#spinner').hide();
+    //     });
+    // }
 })
 function rectificar_(cadena_nombre) {
     cadena= $('#'+cadena_nombre).val().trim().split(' ');
@@ -313,6 +332,11 @@ function validar() {
             control=false;
         }
     }
+    if(size_archivo)
+    {
+        alerta+=mensage.archivo_grande;
+        control=false;
+    }
     if(CKEDITOR.instances['editor1'].getData().length<=0)
     {
         alerta+=mensage.contenido;
@@ -332,65 +356,108 @@ $('#registrar').click(function () {
 function registrar_comunicado() {
 
     mensajes('seguro_registrar');                     
-
-    // $.post(baseurl+"Comunicados/registrar",
-    // {   
-    //     carrera:$('#cod_carrera').val(),
-    //     docente:$('#docente').val(),
-    //     materias:$('#materias').val(),
-    //     grupo_sel:$(".standardSelect").chosen().val(),
-    //     select_poblacion:$('#select_poblacion').val(),
-    //     titulo:$('#titulo').val(),
-    //     incluir_archivo:$('#archivo').is(':checked'),
-    //     fecha_fin:$('#fecha_fin').val(),
-    //     contenido:CKEDITOR.instances['editor1'].getData(),
-    //     habilitado:$('#habilitado').prop('checked'),
-    //     prioridad:$('#prioridad').val(),
-    // }, 
-    // function(data){
-    //     if(data=='exito')
-    //     {
-    //         mensajes('exito');
-    //     }
-    //     else
-    //         mensajes('no_exito');                     
-    // });    
+}
+// window.onload = function () {
+//     var archivo = document.getElementById("file");
+   
+//   }
+function registro_exito() {
+    $("#contenido_mensages").attr("class","alert alert-success text-center");
+    $('#contenido_mensages').html(mensage.exito);
+    $('#modalTitle').html('Registro exitoso');
+    $("#btn_cancelar").hide();
+    $("#btn_registrar").hide();
+    $("#btn_continuar").show();
+    $("#btn_ver_lista").show();  
+}
+function registro_no_exito() {
+    $("#contenido_mensages").attr("class","alert alert-danger text-center");
+    $('#contenido_mensages').html(mensage.no_exito);
+    $('#modalTitle').html('Error al registrar');
+    $("#btn_cancelar").show();  
 }
 $('#btn_registrar').click(function () {
-    $("#contenido_mensages").attr("class","alert alert-info text-center");
-        $('#contenido_mensages').html(mensage.registrando);
-                $('#modalTitle').html('Registrando datos');
-                $("#progres_bar").show();    
-                $("#btn_registrar").attr('disabled',true);    
-                // $("#btn_cancelar").show();
-                $('#barra').attr('aria-valuenow', '15%').css('width','15%');
-                $('#barra').html('15%');
-    var archivo = document.getElementById("file");
-    var informacion = new FormData();
-      informacion.append("archivo", archivo.files[0]);
-      var peticion = crearPeticion();
-      if(peticion == null){
-        alert("Tu navegaddor no es compatible");
-        return;
-      }
-      peticion.addEventListener("load", function() {
-        $("#barra" ).removeClass("bg-info").addClass("bg-success");
-        $('#barra').attr('aria-valuenow', '100%').css('width','100%');
-        $('#barra').html('100%');
-      });
-      peticion.upload.addEventListener("progress", function(e) {
-        var p = Math.round((e.loaded/e.total)*100);
-        $('#barra').attr('aria-valuenow', p+'%').css('width',p+'%');
-        $('#barra').html(p+'%');
-      });
-      peticion.addEventListener("error", function() {
-        alert("Error al subir el archivo");
-      });
-      peticion.addEventListener("abort", function() {
-        alert("La subida se aborto, por favor intenta de nuevo");
-      });
-      peticion.open("POST",baseurl+"material/material/subir");
-      peticion.send(informacion);                    
+    if($('#archivo').is(':checked'))
+    {
+        $("#barra" ).removeClass("bg-success").addClass("bg-info");
+                $('#barra').attr('aria-valuenow', '0%').css('width','0%');
+                $('#barra').html('0%');
+                $("#contenido_mensages").attr("class","alert alert-info text-center");
+                    $('#contenido_mensages').html(mensage.registrando);
+                    $('#modalTitle').html('Registrando datos');
+                    $("#btn_registrar").attr('disabled',true);    
+        setTimeout (function () {
+
+                    $("#progres_bar").show();    
+        var archivo = document.getElementById("file");
+        var informacion = new FormData();
+          informacion.append("archivo", archivo.files[0]);
+          informacion.append("carrera",$('#cod_carrera').val());
+          informacion.append("docente",$('#docente').val());
+          informacion.append("materias",$('#materias').val());
+          informacion.append("grupo_sel",$("#grupo").chosen().val());
+          informacion.append("titulo",$('#titulo').val());
+          informacion.append("incluir_archivo",$('#archivo').is(':checked'));
+          informacion.append("contenido",CKEDITOR.instances['editor1'].getData());
+
+          var peticion = crearPeticion();
+          if(peticion == null){
+            alert("Tu navegador no es compatible");
+            return;
+          }
+          peticion.addEventListener("load", function() {
+            $("#barra" ).removeClass("bg-info").addClass("bg-success");
+            $('#barra').attr('aria-valuenow', '100%').css('width','100%');
+            $('#barra').html('100%');
+
+          });
+          peticion.upload.addEventListener("progress", function(e) {
+            var p = Math.round((e.loaded/e.total)*100);
+            $('#barra').attr('aria-valuenow', p+'%').css('width',p+'%');
+            $('#barra').html(p+'%');
+          });
+          peticion.addEventListener("error", function() {
+            alert("Error al subir el archivo");
+          });
+          peticion.addEventListener("abort", function() {
+            alert("La subida se aborto, por favor intenta de nuevo");
+          });
+          peticion.open("POST",baseurl+"material/material/subir");
+          peticion.send(informacion);    
+          peticion.onreadystatechange = function() {
+
+                // readyState es 4
+                if (peticion.readyState == 4 ) {
+                    var data = peticion.responseText ;
+                    if(data=='exito')
+                        registro_exito();                    
+                    else
+                        registro_no_exito();
+                    console.log(data);
+                }
+            }                
+        }, 500); 
+    }
+    else
+    {
+        $.post(baseurl+"material/material/subir",
+        {   
+            carrera:$('#cod_carrera').val(),
+            docente:$('#docente').val(),
+            materias:$('#materias').val(),
+            grupo_sel:$("#grupo").chosen().val(),
+            titulo:$('#titulo').val(),
+            incluir_archivo:$('#archivo').is(':checked'),
+            contenido:CKEDITOR.instances['editor1'].getData(),           
+        }, 
+        function(data){
+            if(data=='exito')
+                registro_exito();                    
+            else
+                registro_no_exito();                    
+        }); 
+    }
+    
     
     
 });
@@ -442,12 +509,14 @@ mensage = {
     materias     : '<li> Debe seleccionar la Materia a la que pertenece el Material.</li>',
     seleccion   : '<li> Seleccione el o los Grupos a los que va destinado este Material.</li>',
     archivo   : '<li> Seleccione un Archivo para publicarlo.</li>',
+    archivo_grande   : '<li> Archivo seleccionado demasiado grande.</li>',
     contenido   : '<li> Introduzca una descripción del Material a publicar.</li>',
-    exito       : '<h1><span class="fa fa-exclamation-triangle"></span></h1><span class="text-left"> Se registró correctamente el Material.</span>',
+    exito       : '<h1><span class="fa fa-check"></span></h1><span class="text-left"> Se registró correctamente el Material.</span>',
     no_exito  : '<h1><span class="fa fa-exclamation-triangle"></span></h1><span class="text-left"> No se pudo registrar el Material. Comuníquese con el Administrador del Sistema.</span>',
     alerta_existe_titulo  : '<h1><span class="fa fa-exclamation-triangle"></span></h1><span class="text-left"> El título <strong id="titulo_intro"></strong> ya existe registrado en la carrera: <strong>'+$('#cod_carrera option:selected').text()+'</strong>, verifique sus datos.</span>',
     seguro_registrar  : '<h1><span class="fa fa-question"></span></h1><span class="text-left"> Está seguro de querer registrar este Material Académico?</span>',
-    registrando  : '<h1><span class="fa fa-question"></span></h1><span class="text-left"> Espere por favor, se están registrando los datos</span>',
+    registrando  : '<h1><span class="fa fa-spinner fa-spin"></span></h1><span class="text-left"> Espere por favor, se están registrando los datos</span>',
+    archivogrande  : '<h1><span class="fa fa-exclamation-triangle"></span></h1><span class="text-left"> El archivo que intenta subir, es demasiado grande, el tamaño máximo es de 128 MB.</span>',
     };
 function mensajes(tipo, data) {
     $("#btn_cancelar").hide();
@@ -503,6 +572,15 @@ function mensajes(tipo, data) {
                 $('#modalTitle').html('Registrando datos');
                 $("#progres_bar").show();    
                 $("#btn_registrar").attr('disabled',true);    
+                $("#btn_cancelar").show();
+    }
+    if(tipo=='archivogrande')
+    {
+        $("#contenido_mensages").attr("class","alert alert-warning text-center");
+        $('#contenido_mensages').html(mensage.archivogrande);
+                $('#modalTitle').html('Archivo demasiado grande');
+                // $("#progres_bar").show();    
+                // $("#btn_registrar").attr('disabled',true);    
                 $("#btn_cancelar").show();
     }
     $('#btn_mensaje').click();    

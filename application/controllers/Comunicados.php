@@ -13,7 +13,7 @@ class Comunicados extends CI_Controller
 			redirect(base_url());
 		}
 		$usuario=$this->session->userdata('username');
-		$data= array('titulo'=> 'Bienvenido');
+		$data= array('titulo'=> 'Lista de Comunicados');
 			$onload='onload="get_lista()"';
 
 		$this->load->view("head",$data);

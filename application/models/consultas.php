@@ -142,7 +142,77 @@ class Consultas extends CI_Model
 			return null;
 		}
 	}
+	public function get_lista_material()
+	{
+		$sql="SELECT id_material, gestion, titulo, contenido, cod_docente, nom_archivo, url, carrera, fecha, cod_materia FROM est_material ORDER BY fecha ASC";
+		$consulta=$this->db->query($sql);
+		if($consulta->num_rows()>0)
+		{
+			return $consulta;
+		}
+		else
+		{
+			return null;
+		}
+	}
+	public function get_material_grupo($id_material)
+	{
+		$sql="SELECT cod_grupo FROM est_material_grupo WHERE id_material = $id_material";
+		$consulta=$this->db->query($sql);
+		if($consulta->num_rows()>0)
+		{
+			return $consulta;
+		}
+		else
+		{
+			return null;
+		}
+	}
+	public function get_nom_docente($cod_docente) {
 
+		$this->db->select("CONCAT(nombre,' ', apellido_p,' ', apellido_m) as name");
+		$this->db->where('cod_docente',$cod_docente);
+		$consulta = $this->db->get('docente');
+
+		if($consulta->num_rows()>0)
+		{
+			return $consulta->row()->name;
+		}
+		else
+		{
+			return '';
+		}
+	}
+	
+	public function get_nom_materia($cod_materia,$carrera) {
+
+		$this->db->select("nombre_materia");
+		$this->db->where('sigla_materia',$cod_materia);
+		$this->db->where('cod_pensum',$carrera);
+		$consulta = $this->db->get('materia');
+
+		if($consulta->num_rows()>0)
+		{
+			return $consulta->row()->nombre_materia;
+		}
+		else
+		{
+			return '';
+		}
+	}
+	public function get_edit_material($id)
+	{
+		$sql="SELECT est_material.id_material, titulo, contenido, cod_docente, nom_archivo, url, carrera, fecha, cod_materia,cod_grupo FROM est_material INNER JOIN est_material_grupo ON est_material_grupo.id_material = est_material.id_material WHERE est_material_grupo.id_material = $id";
+		$consulta=$this->db->query($sql);
+		if($consulta->num_rows()>0)
+		{
+			return $consulta;
+		}
+		else
+		{
+			return null;
+		}
+	}
 	public function get_all_carreras()
 	{
 		$consulta=$this->db->query("SELECT cod_carrera, nombre_carrera FROM carrera ORDER BY orden ASC ");

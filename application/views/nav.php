@@ -30,7 +30,7 @@
                         <a href="<?= base_url()?>/material/material/nuevo"> <i class="menu-icon ti-write"></i>Nuevo </a>
                     </li>
                     <li>
-                        <a href="#"> <i class="menu-icon ti-view-list"></i>Listado</a>
+                        <a href="<?= base_url()?>/material/material/lista"> <i class="menu-icon ti-view-list"></i>Listado</a>
                     </li>
 
                     <h3 class="menu-title">Comunicados</h3><!-- /.menu-title -->
