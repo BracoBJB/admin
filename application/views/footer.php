@@ -19,9 +19,9 @@
         <script src="<?= base_url() ?>plantillas/js/comentarios.js"></script>
     <?php 
         }
-        if($this->uri->segment(2)=='lista') {
+        if($this->uri->segment(2)=='lista_blocked') {
         ?>
-
+        <script src="<?= base_url() ?>plantillas/js/list_blocked.js"></script>
     <?php
         }
     } 

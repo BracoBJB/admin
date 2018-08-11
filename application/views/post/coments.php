@@ -33,25 +33,55 @@
 
                 <span class='label label-warning'>Pendiente</span>
                 -->
+            
+                <div class="row form-group">
+                <div class="col-md-6">
+                    <div class="col col-md-6">
+                        <label for="hf-email" class=" form-control-label">Filtrar por denuncia:</label>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <select name="slc_aprobado" id="slc_denuncia" class="form-control form-control-sm ">
+                            <option value="0">Todos</option>
+                            <option value="1">Con denuncia</option>
+                            <option value="2">Sin denuncia</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="col col-md-6">
+                        <label for="hf-password" class=" form-control-label">Filtrar por aprobación:</label>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <select name="slc_aprobado" id="slc_aprobado" class="form-control form-control-sm ">
+                            <option value="1">Pendientes</option>
+                            <option value="2">Aprobados</option>
+                            <option value="0">Todos</option>
+                            
+                        </select>
+                    </div>
+                </div>
+                
+                </div>
                 
             <table id="tbl_coments" class="table table-striped table-bordered">
-            <thead>
-                <tr>
-                    <th style="width:5%;background-color:#006699;color: white;">ID</th>
-                    <th style="width:15%;background-color:#006699;color: white;">Post</th>
-                    <th style="width:10%;background-color:#006699;color: white;">Cod Est</th>
-                    <th style="width:10%;background-color:#006699;color: white;">Nombre</th>
-                    <th style="width:25%;background-color:#006699;color: white;">Contenido</th>
-                    <th style="width:15%;background-color:#006699;color: white;">Fecha</th>
-                    <th style="width:5%;background-color:#006699;color: white;">Res</th>
-                    <th style="width:5%;background-color:#006699;color: white;">Verificado</th>
-                    <th style="width:5%;background-color:#006699;color: white;">Den.</th>
-                    <th style="width:5%;background-color:#006699;color: white;">Action</th>
-                </tr>
-            </thead>
-            <tbody id="list_post">
-            </tbody>
+                <thead>
+                    <tr>
+                        <th style="width:5%;background-color:#006699;color: white;">ID</th>
+                        <th style="width:15%;background-color:#006699;color: white;">Post</th>
+                        <th style="width:10%;background-color:#006699;color: white;">Cod Est</th>
+                        <th style="width:10%;background-color:#006699;color: white;">Nombre</th>
+                        <th style="width:25%;background-color:#006699;color: white;">Contenido</th>
+                        <th style="width:15%;background-color:#006699;color: white;">Fecha</th>
+                        <th style="width:5%;background-color:#006699;color: white;">Res</th>
+                        <th style="width:5%;background-color:#006699;color: white;">Verificado</th>
+                        <th style="width:5%;background-color:#006699;color: white;">Den.</th>
+                        <th style="width:5%;background-color:#006699;color: white;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="list_post">
+                </tbody>
             </table>
+
                 </div>
             </div>
         </div>
@@ -82,14 +112,3 @@
         </div>
     </div>
 </div>
-
-
-<script>
-/*
-$(document).ready(function() {
-    $('#tbl_coments').DataTable({
-        "order": [ 6, 'desc' ]
-    });
-});
-*/
-</script>

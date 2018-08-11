@@ -455,14 +455,11 @@ class Blog extends CI_Controller
 		//parametro busqueda 
 
 		$type  = $this->input->post('tipo');
-		$denuncia = $this->input->post('denuncia');
 		$start = $this->input->post('start');
 		$length = $this->input->post('length');
 		$search = $this->input->post('search')['value'];
-		$column  = $this->input->post('order')[0]['column'];
-		$dir = $this->input->post('order')[0]['dir'];
 
-		$array_res = $this->consultas->get_comentarios_sp($type,$denuncia,$start,$length,$search,$column,$dir);
+		$array_res = $this->consultas->get_comentarios_sp($type,$start,$length,$search);
 		$total_datos = $array_res['numDataTotal'];
 		$resultado = $array_res['datos'];
 
@@ -486,8 +483,6 @@ class Blog extends CI_Controller
 
 		$json_data = array(
 			"draw" 				=>intval($this->input->post('draw')),	//
-			"problems" 				=>$column.'-'.$dir,
-
 			"recordsTotal"		=>intval($total_datos_obtenidos),	 	//Cantidad de registros obtenido   
 			"recordsFiltered"	=>intval($total_datos),					//Cantidad de registros Permite dibuar paginacion
 			"data"				=>$datos						//Pasa los datos en si
@@ -542,9 +537,9 @@ class Blog extends CI_Controller
 		);
 		$success = $this->consultas->update_table('est_password',$data,'cod_ceta='.$cod_ceta);
 		if($success) {
-			echo 'exito al bloquear al estudiante';
+			echo 'exito';
 		} else {
-			echo 'fallo al bloquear al estudiante';
+			echo 'fallo';
 		}
 	}
 
@@ -561,26 +556,5 @@ class Blog extends CI_Controller
 		} else {
 			echo 'fallo';
 		}
-	}
-
-	public function lista_blocked() {
-
-		$data["titulo"] = "Usuarios bloqueados";
-		//$data["posts"] =  $this->consultas->get_list_post();
-		$data["user"] = $this->session->userdata('username');
-		$data["onLoad"] = '';
-
-		$this->load->view("head",$data);
-
-		$this->load->view("nav");
-		$this->load->view("post/list_blocked"); 	
-		$this->load->view("footer");
-	}
-
-	public function get_list_blocked_est() {
-		
-		$blocked = $this->consultas->get_list_blocked();
-		echo json_encode($blocked);
-
 	}
 }

@@ -61,14 +61,35 @@
                             <div class="form-group">
                                 <label for="materias" id="label_materia" class=" form-control-label">Seleccione una materia</label>
                                 <select class="standardSelect form-control" id="materias" name="materias" data-placeholder="Elija una materia...">
-                                    <option value="0" >No hay materias </option>  
+                                    <?php if ( isset($get_materias_doc))
+                                    {
+                                        $docente_materia='';
+                                                if ( isset($get_material))
+                                                     $docente_materia=$get_material->row()->cod_materia;
+                                        foreach($get_materias_doc  -> result() as $doc)
+                                        {
+                                            if($docente_materia==$doc->sigla_materia)
+                                                echo '<option value="'.$doc->sigla_materia.'" selected="true">'.$doc->nombre_materia_oficial.' </option>';
+                                            else
+                                                echo '<option value="'.$doc->sigla_materia.'" >'.$doc->nombre_materia_oficial.' </option>';
+                                        }
+                                    }
+                                    else
+                                            echo '<option value="0" >No hay materias </option>';
+                                    ?>
+                                      
                                 
                                 </select>                                
                             </div>
                             <div class="form-group">
                                 <label for="grupo" id="label_grupo" class=" form-control-label">Seleccione grupo(s)</label>
                                 <select class="standardSelect form-control" multiple id="grupo" name="grupo[]" data-placeholder="Elija un grupo(s)...">
-                                    <option value="0" >No hay grupos </option> 
+                                    <?php if ( isset($get_grupo_sel))
+                                       echo $get_grupo_sel; 
+                                    else
+                                            echo '<option value="0" >No hay grupos </option>';
+                                    ?>
+                                     
                                 </select>                                
                             </div>
                             <div class="form-group">
@@ -96,7 +117,7 @@
                     </div>
 
                     <div class="card-footer">
-                        <?php if ( isset($var_modific)) 
+                        <?php if ( isset($get_material)) 
                                 echo '<button type="submit" class="btn btn-primary btn-sm" id="modificar"><i class="fa fa-edit"></i> Modificar </button>';
                             else
                                 echo '<button type="submit" class="btn btn-primary btn-sm" id="registrar"><i class="fa fa-check"></i> Registrar </button>';
@@ -354,13 +375,8 @@ $('#registrar').click(function () {
 });
 
 function registrar_comunicado() {
-
     mensajes('seguro_registrar');                     
 }
-// window.onload = function () {
-//     var archivo = document.getElementById("file");
-   
-//   }
 function registro_exito() {
     $("#contenido_mensages").attr("class","alert alert-success text-center");
     $('#contenido_mensages').html(mensage.exito);
@@ -457,9 +473,6 @@ $('#btn_registrar').click(function () {
                 registro_no_exito();                    
         }); 
     }
-    
-    
-    
 });
 $('#modificar').click(function () {
     

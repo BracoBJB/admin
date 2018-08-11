@@ -49,6 +49,7 @@ class Material extends CI_Controller
 								<td>'.$fila->carrera.'</td>
 								<td>'.$nom_docente.'</td>
 								<td>'.$nom_materia.'</td>
+								<td>'.$grupos.'</td>
 								<td>'.$fila->nom_archivo.'</td>
 								<td nowrap><button class="btn btn-success btn-sm"  onclick=\'edit_material('.$fila->id_material.');\'><span class="fa fa-pencil"></span></button>
 									<button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modalMensajes" onclick=\'seguro_del('.$fila->id_material.',"'.$fila->titulo.'");\' ><i class="fa fa-times"></i></button></td>
@@ -200,75 +201,57 @@ class Material extends CI_Controller
 		
 		$get_material = $this->consultas->get_edit_material($id);
 
-		$get_grupo_seleccionado=$this->get_poblacion_seleccionada($get_material->row()->id_material,$get_material->row()->carrera,true,$id);		
+		$get_grupo_seleccionado=$this->get_grupo_seleccionado($get_material->row()->carrera,$get_material->row()->cod_docente,$get_material->row()->cod_materia,$id);		
+		$get_materias_doc=$this->get_materias_doc($get_material->row()->carrera,$get_material->row()->cod_docente);		
 
-		$data= array('user'=> $usuario,'onLoad'=>$onload, 'carreras'=>$consulta_carreras,'docentes'=>$docentes,'get_material'=>$get_material,'var_modific'=>$get_grupo_seleccionado, 'id_sel'=>$id);
+		$data= array('user'=> $usuario,'onLoad'=>$onload, 'carreras'=>$consulta_carreras,'docentes'=>$docentes,'get_material'=>$get_material,'get_materias_doc'=>$get_materias_doc,'get_grupo_sel'=>$get_grupo_seleccionado, 'id_sel'=>$id);
 		$this->load->view("nav", $data);
 
 		$this->load->view("material/nuevo_material");
 		$this->load->view("footer");
 	}
+	public function get_materias_doc($cod_pensum,$cod_docente)
+	{
+		$gestion=$this->consultas->get_last_gestion()->row()->valor;
+		$sql="SELECT DISTINCT nombre_materia_oficial, materia.sigla_materia, nivel_materia FROM asignacion_docente INNER JOIN materia ON materia.cod_pensum = asignacion_docente.cod_pensum AND materia.sigla_materia = asignacion_docente.sigla_materia WHERE asignacion_docente.cod_docente = '$cod_docente' AND asignacion_docente.gestion = '$gestion' AND asignacion_docente.cod_pensum = '$cod_pensum' ORDER BY nivel_materia, materia.sigla_materia";
+		return$get_materias=$this->consultas->consulta_SQL($sql);
+	}
 	public function get_poblacion_sel()
 	{
 		$tipo_sel=$_POST['tipo_sel'];
 		$carrera=$_POST['carrera'];
-		$resultado=$this->get_poblacion_seleccionada($tipo_sel,$carrera,false,'0');		
+		$resultado=$this->get_grupo_seleccionado($tipo_sel,$carrera,false,'0');		
 		echo $resultado;
 	}
-	public function get_poblacion_seleccionada($tipo_sel,$carrera,$modificar,$id)
+	public function get_grupo_seleccionado($cod_pensum,$cod_docente,$sigla_materia,$id)
 	{
-		// $lista = array();
-		// if($modificar)
-		// {
+		$lista = array();
+		$get_items=$this->consultas->get_material_grupo($id);
+		foreach ($get_items ->result() as $row)
+		{
+			array_push($lista,$row->cod_grupo);
+		}
 
-		// 	$get_items=$this->consultas->get_avisos_población_item($id);
-		// 	foreach ($get_items ->result() as $row)
-		// 	{
-		// 		array_push($lista,$row->item);
-		// 	}
-		// }
-		// $resultado='';
-		// if($tipo_sel=='1')
-		// {
-		// 	$resultado.='<option value="Todos" selected="selected">Todos</option>';				
-		// }
-		// if($tipo_sel=='2')
-		// {
-		// 	$get_grupo=$this->consultas->get_semestres_carrera($carrera);
-		// 	if($get_grupo!=null)
-		// 	foreach ($get_grupo ->result() as $fila) {
-		// 		if($modificar)
-		// 		{
-		// 			$aux='';
-		// 			for ($i=0; $i <count($lista) ; $i++) { 
-		// 				if($lista[$i]==$fila->semestre)
-		// 					$aux='selected="selected"';
-		// 			}
-		// 					$resultado.='<option value="'.$fila->semestre.'" '.$aux.'>'.$fila->semestre.'</option>';				
-		// 		}
-		// 		else
-		// 			$resultado.='<option value="'.$fila->semestre.'" >'.$fila->semestre.'</option>';				
-		// 	}
-		// }
-		// if($tipo_sel=='3')
-		// {
-		// 	$get_grupo=$this->consultas->get_grupos_carrera($carrera);
-		// 	if($get_grupo!=null)
-		// 	foreach ($get_grupo ->result() as $fila) {
-		// 		if($modificar)
-		// 		{
-		// 			$aux='';
-		// 			for ($i=0; $i <count($lista) ; $i++) { 
-		// 				if($lista[$i]==$fila->cod_grupo)
-		// 					$aux='selected="selected"';
-		// 			}
-		// 					$resultado.='<option value="'.$fila->cod_grupo.'" '.$aux.'>'.$fila->cod_grupo.'</option>';				
-		// 		}
-		// 		else
-		// 		$resultado.='<option value="'.$fila->cod_grupo.'" >'.$fila->cod_grupo.'</option>';				
-		// 	}
-		// }
-		// return $resultado;
+		$gestion=$this->consultas->get_last_gestion()->row()->valor;
+		
+		$sql="SELECT DISTINCT cod_grupo FROM asignacion_docente INNER JOIN materia ON materia.cod_pensum = asignacion_docente.cod_pensum AND materia.sigla_materia = asignacion_docente.sigla_materia WHERE cod_docente = '$cod_docente' AND gestion = '$gestion' AND asignacion_docente.cod_pensum = '$cod_pensum' AND asignacion_docente.sigla_materia = '$sigla_materia' ORDER BY cod_grupo";
+		
+		$get_grupos=$this->consultas->consulta_SQL($sql);
+		$resultado='';
+		if($get_grupos!=null)
+		{
+			foreach ($get_grupos -> result() as $fila) {
+				$aux='';
+					for ($i=0; $i <count($lista) ; $i++) { 
+						if($lista[$i]==$fila->cod_grupo)
+							$aux='selected="selected"';
+					}
+				$resultado.='<option value="'.$fila->cod_grupo.'" '.$aux.'>'.$fila->cod_grupo.'</option>';
+			}
+		}
+		else
+			$resultado.='<option value="0">No hay grupos</option>';
+		return $resultado;
 	}
 	public function registrar()
 	{

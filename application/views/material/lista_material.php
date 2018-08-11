@@ -35,6 +35,7 @@
                                 <th>Carrera</th>
                                 <th>Docente</th>
                                 <th>Materia</th>
+                                <th>Grupo</th>
         						<th>Archivo</th>
         						<th></th>
                               </tr>
@@ -81,8 +82,8 @@ function get_lista() {
         function(data){
             $('#listado').html(data);
             $("#lista_material").DataTable({
-    "order": [0, 'desc' ]
-});
+            "order": [0, 'desc' ]
+            });
         });
 }
 function del_material() {

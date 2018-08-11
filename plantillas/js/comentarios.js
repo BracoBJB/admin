@@ -1,35 +1,4 @@
-    
-
 /*
-    $.post(baseurl+"blog/get_comentarios_sp",
-    {
-        tipo:1,
-        start:0,
-        length:5,
-        'search[value]':'n'
-    },
-    function (data) {
-        $('#txtArea').val(data);
-        //alert('hola'+data+'');
-        
-        //var c = JSON.parse(data);
-        //$.each(c,function(i,item){
-        //  $('#cboCiudad').append('<option value="'+item.id_ciudad+'">'+item.nombre_ciudad+'</option>');
-        //});
-    });
-
-    $('#cboCiudad').change(function() {
-        $('#cboCiudad option:selected').each(function() {
-            var id = $('#cboCiudad').val();
-            alert(id);
-
-            $.post();
-        });
-    });
-*/
-
-
-    /*
     //lismpiar tabla
     $('#tbl_coments').html(`
         <tr>
@@ -95,9 +64,14 @@
         'url': baseurl+"blog/get_comentarios_sp",
         'dataType': "json",
         'type': "POST",
-        'data': {
-            tipo:0
-        },
+        'data': function ( d ) {
+            d.tipo = $('#slc_aprobado').val();
+            d.denuncia = $('#slc_denuncia').val();
+        }
+        // {
+        //     tipo:$('#slc_aprobado').val(),
+        //     denuncia:$('#slc_denuncia').val()
+        // }
     },
     'columns':[
         {data: 'id_comentario'},
@@ -109,7 +83,7 @@
         {data: 'es_respuesta'},
         {data: 'verificado'},
         {data: 'denuncia'},
-        {"orderable":true,
+        {"orderable":false,
              render:function(data,type,row) {
                 var addHtml = `
             <div class="btn-group" role="group">
@@ -180,10 +154,19 @@
         }
 
     ],
-    "order": [[ 4, 'desc' ]]
+    "order": [[ 0, "desc" ]]
 });
 
 $('div.toolbar').html('<b> Custom tool bar! Text/images etc.</b>');
+
+$('#slc_aprobado').change(function () {
+    //alert('aprobado:'+$('#slc_aprobado').val()+'-dununcia:'+$('#slc_denuncia').val());
+    table.draw();
+});
+
+$('#slc_denuncia').change(function () {
+    table.draw();
+});
 
 
 function aprobarComentario(id_comentario) {
@@ -303,90 +286,14 @@ function realizarAccion() {
             table.draw();
         });
     } else if(operacion === '2') {
-
+        $.post(baseurl+"blog/bloquearEstudiante",
+        {
+            cod_ceta:dato
+        },
+        function (data) {
+            console.log('el resultado es :'+data);
+            table.draw();
+        });
     }
 
 }
-
-
-
-/*
-$('#tbl_coments').DataTable({
-    'lengthMenu':[[10,25,50,-1],[10,25,50,"Todo"]],
-    'pagingType': "full_numbers",
-    'paging':true,
-    'info': true,
-    'filter':true,
-    'stateSave':true,
-    'ajax' : {
-        'url': baseurl+"blog/get_comentarios",
-        'type': "POST",
-        'data': {
-            tipo:1
-        },
-        dataSrc:''
-        //'dataSrc': function(data) {
-        //    return data;
-        //}
-    },
-    'columns':[
-        {data: 'id_comentario'},
-        {data: 'titulo'},
-        {data: 'nombre'},
-        {data: 'contenido'},
-        {data: 'fecha'},
-        {data: 'es_respuesta'},
-        {data: 'verificado'},
-        {"orderable":true,
-             render:function(data,type,row) {
-                 return `
-               <div class="btn-group" role="group">
-                 <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                 Acciones
-                 </button>
-                 <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                    <a class="dropdown-item" style="color:green;" href="#"><i class="fa fa-check"></i> &nbsp;Aprobar</a>
-                    <a class="dropdown-item" style="color:red;" href="#"><i class="fa fa-times"></i> &nbsp;Eliminar Comentario</a>
-                    <a class="dropdown-item" style="color:red;" href="#"><i class="fa fa-ban"></i> &nbsp;Banear Usuario</a>
-                 </div>
-               </div>
-                 `;
-             }
-        },
-    ],
-    'columnDefs': [
-        {
-            'targets': [6],
-            'data': "verificado",
-            'render': function(data,type,row) {
-                if(data == 'f') {
-                    return "<span style='color:red;'><i class='fa fa-times'></i> &nbsp;Pendiente</span>";
-                } else {
-                    return "<span style='color:green;'><i class='fa fa-check'></i> &nbsp;Aprobado</span>";
-                }
-            }
-        },
-        {
-            'targets': [5],
-            'data': "es_respuesta",
-            'render': function(data,type,row) {
-                if(data == '0') {
-                    return "NO";
-                } else {
-                    return data;
-                }
-            }
-        },
-        {
-            'targets': [2],
-            'data': "nombre",
-            'render': function(data,type,row) {
-                return "<span style='color:#006699;'><i class='fa fa-user'></i> &nbsp;"+data+"</span>";
-            }
-            
-        }
-
-    ],
-    "order": [[ 4, 'desc' ]]
-});
-*/

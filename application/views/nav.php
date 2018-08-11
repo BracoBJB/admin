@@ -49,7 +49,10 @@
                         <a href="<?= base_url()?>blog/lista"> <i class="menu-icon ti-view-list"></i>Listado</a>
                     </li> 
                     <li>
-                        <a href="<?= base_url()?>blog/comentarios"> <i class="menu-icon ti-view-list"></i>Lista de comentarios</a>
+                        <a href="<?= base_url()?>blog/comentarios"> <i class="menu-icon ti-view-list"></i>Control de comentarios</a>
+                    </li> 
+                    <li>
+                        <a href="<?= base_url()?>blog/lista_blocked"> <i class="menu-icon ti-view-list"></i>Bloqueados</a>
                     </li> 
                 </ul>
             </div><!-- /.navbar-collapse -->

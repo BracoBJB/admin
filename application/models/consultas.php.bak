@@ -362,8 +362,8 @@ class Consultas extends CI_Model
 		return $consulta->num_rows() > 0;
 	}
 	//Inserta un array asociativo en la bd
-	public function insertArray($tabla,$data_array) {
-		$this->db->insert($tabla, $data_array);
+	public function insertArray($table,$data_array) {
+		$this->db->insert($table, $data_array);
 	}
 
 	public function get_list_post() {
@@ -478,30 +478,7 @@ class Consultas extends CI_Model
 		return $consulta->result();
 	}
 
-	//Funcion adicional que para permitir filtrar las denuncias en el metodo get_comentarios_sp
-	function addWhereDenuncia($denuncia,$is_and) {
-		$result = '';
-		$temp = '';
-		if($denuncia == '1') {
-			$temp.=' epc.denuncia = TRUE ';
-		} else {
-			if($denuncia == '2') {
-				$temp.=' epc.denuncia = FALSE ';
-			}
-		}
-
-		if(!empty($temp)) {
-			if($is_and) {
-				$result = ' and '.$temp;
-			} else {
-				$result = ' where '.$temp;
-			}	
-		}
-
-		return $result;
-	}
-
-	public function get_comentarios_sp($type,$denuncia,$start,$length,$search,$column,$dir) {
+	public function get_comentarios_sp($type,$start,$length,$search) {
 
 		$full_query_count ="select count(1) as counted from (
 			%s
@@ -526,7 +503,7 @@ class Consultas extends CI_Model
 		}
 
 
-		$sql = "select CAST(epc.id_comentario AS text),ep.titulo,e.cod_ceta,e.nombre,e.cod_ceta,epc.contenido,CAST(epc.fecha AS text)
+		$sql = "select CAST(epc.id_comentario AS text),ep.titulo,e.nombre,e.cod_ceta,epc.contenido,CAST(epc.fecha AS text)
 		, case when epc.id_respuesta is null then 'No' else cast(epc.id_respuesta as text) end as es_respuesta
 		, case when epc.verificado then 'Aprobado' else 'Pendiente' end as verificado
 		, case when epc.denuncia then 'Si' else 'No' end as denuncia
@@ -539,39 +516,17 @@ class Consultas extends CI_Model
 
 		if($type == '1') {
 			$sql.=' where epc.verificado = FALSE ';
-			$sql.= $this->addWhereDenuncia($denuncia,TRUE);
 		} else {
 			if($type == '2') {
 				$sql.=' where epc.verificado = TRUE ';
-				$sql.= $this->addWhereDenuncia($denuncia,TRUE);
-			} else {
-				$sql.= $this->addWhereDenuncia($denuncia,FALSE);
 			}
 		}
 		
 		$consulta_count = $this->db->query(sprintf($full_query_count,$sql,$query_search));
 		$query_num_record = $consulta_count->row()->counted;
 
-		if(isset($column) and isset($dir)) {
-			if($column == '0') {
-				$query_search.=" order by id_comentario {$dir} ";
-			} else if($column == '1') {
-				$query_search.=" order by titulo {$dir} ";
-			} else if($column == '2') {
-				$query_search.=" order by cod_ceta {$dir} ";
-			} else if($column == '3') {
-				$query_search.=" order by nombre {$dir} ";
-			} else if($column == '4') {
-				$query_search.=" order by contenido {$dir} ";
-			} else if($column == '5') {
-				$query_search.=" order by fecha {$dir} ";
-			} else if($column == '6') {
-				$query_search.=" order by es_respuesta {$dir} ";
-			} else if($column == '7') {
-				$query_search.=" order by verificado {$dir} ";
-			} else if($column == '8') {
-				$query_search.=" order by denuncia {$dir} ";
-			}
+		if(isset($colum_order) and isset($col_dir)) {
+			$query_search.=" order by {$colum_order} {$col_dir}";
 		}
 
 		if($length != '-1') {
@@ -586,17 +541,6 @@ class Consultas extends CI_Model
 		);
 
 		return $retornar;
-	}
-
-	public function get_list_blocked() {
-		$sql = "select e.cod_ceta,concat (e.nombres,' ',e.ap_paterno,' ',e.ap_materno) as nombre,e.direccion,e.sexo as genero,ep.bloqueado
-		from estudiante as e
-		inner join est_password as ep on e.cod_ceta = ep.cod_ceta";
-		//where ep.bloqueado = TRUE";
-
-		$consulta=$this->db->query($sql);
-		return $consulta->result();
-
 	}
 }
 
