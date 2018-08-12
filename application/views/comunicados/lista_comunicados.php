@@ -81,6 +81,9 @@ function get_lista() {
         function(data){
             $('#listado').html(data);
             $("#lista_avisos").DataTable({
+                "language": {
+                    "url": baseurl +"plantillas/js/spanish.json"
+                },
     "order": [ 2, 'desc' ]
 });
         });

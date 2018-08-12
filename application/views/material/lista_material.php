@@ -82,6 +82,9 @@ function get_lista() {
         function(data){
             $('#listado').html(data);
             $("#lista_material").DataTable({
+                "language": {
+                    "url": baseurl +"plantillas/js/spanish.json"
+                },
             "order": [0, 'desc' ]
             });
         });
