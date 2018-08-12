@@ -78,6 +78,9 @@ function get_list_post() {
             $('#list_post').html(data);
             
             $("#list_post_table").DataTable({
+                "language": {
+                    "url": baseurl +"plantillas/js/spanish.json"
+                },
                 'paging':true,
                 'info':false,
                 'filter':true,

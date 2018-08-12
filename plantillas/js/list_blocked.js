@@ -1,5 +1,8 @@
 var rowRemove = null;
 var table = $('#list_blocked_table').DataTable({
+    "language": {
+        "url": baseurl +"plantillas/js/spanish.json"
+    },
     'lengthMenu':[[10,25,50,-1],[10,25,50,"Todo"]],
     'pagingType': "full_numbers",
     'paging':true,

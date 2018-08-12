@@ -42,14 +42,8 @@
    });*/
    
    var table = $('#tbl_coments').DataTable({
-    'language': { 
-        //'url':"//cdn.datatables.net/plug-ins/895656456/fasdf7asdfas/spanish.json"
-        'lengthMenu':"Mostrar _MENU_ registros por pagina",
-        'zeroRecords':"No se encontro ningun resultado",
-        'info':"Mostrando pagina _PAGE_ de _PAGES_",
-        'infoEmpty':"No hay registros disponibles",
-        'infoFiltered':"(filtrado de _MAX_ total registros)",
-        'search':"Buscar"
+    "language": {
+        "url": baseurl +"plantillas/js/spanish.json"
     },
     //'dom':'<"toolbar col-md-6">frtip',
     'lengthMenu':[[10,25,50,-1],[10,25,50,"Todo"]],
