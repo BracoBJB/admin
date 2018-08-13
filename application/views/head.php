@@ -44,7 +44,7 @@
     <link rel="stylesheet" href="<?= base_url()?>plantillas/css/font-awesome.min.css">
     <link rel="stylesheet" href="<?= base_url()?>plantillas/css/themify-icons.css">
     <link rel="stylesheet" href="<?= base_url()?>plantillas/css/cs-skin-elastic.css">
-    <link rel="stylesheet" href="<?= base_url()?>plantillas/scss/style.css">
+    <link rel="stylesheet" href="<?= base_url()?>plantillas/css/style.css">
     <link rel="stylesheet" href="<?=base_url();?>plantillas/css/lib/datatable/dataTables.bootstrap.min.css">
     
     
