@@ -24,6 +24,11 @@
         <script src="<?= base_url() ?>plantillas/js/list_blocked.js"></script>
     <?php
         }
+        if($this->uri->segment(2)=='lista') {
+            ?>
+            <script src="<?= base_url() ?>plantillas/js/list_post.js"></script>
+        <?php
+            }
     } 
     ?>
 </body>

@@ -377,7 +377,7 @@ class Blog extends CI_Controller
 		$data["titulo"] = "Lista de publicaciones";
 		//$data["posts"] =  $this->consultas->get_list_post();
 		$data["user"] = $this->session->userdata('username');
-		$data["onLoad"] = 'onload="get_list_post()"';
+		$data["onLoad"] = '';
 
 		$this->load->view("head",$data);
 
@@ -388,7 +388,8 @@ class Blog extends CI_Controller
 
 	public function get_lista_post() {
 		$lista_post = $this->consultas->get_list_post();
-
+		echo json_encode($lista_post);
+		/*
 		if(is_null($lista_post)) {
 			echo '';
 		} else {
@@ -414,7 +415,7 @@ class Blog extends CI_Controller
             </tr>
             <?php
 			}
-		}
+		}*/
 
 	}
 	

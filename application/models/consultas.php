@@ -385,14 +385,9 @@ class Consultas extends CI_Model
 		$this->db->order_by("ep.fecha", "desc");
 		$query = $this->db->get();
 
-		if($query->num_rows()>0)
-		{
-			return $query->result();
-		}
-		else
-		{
-			return null;
-		}	
+		
+		return $query->result();
+		
 	}
 	public function get_post($id_post) {
 		$this->db->select('ep.id_post,ep.titulo,ep.tema,ep.carrera,ep.contenido,ep.descripcion,ep.fecha,ep.activo,ep.permite_comentario');

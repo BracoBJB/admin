@@ -28,11 +28,17 @@
             <table id="list_post_table" class="table table-striped table-bordered">
             <thead>
                 <tr>
-                <th>Titulo</th>
+                <th>Id</th>
+                <th>Post</th>
+                
                 <th>Tema</th>
                 <th>Autor(es)</th>
+                
+                
                 <th>Carrera</th>
+                
                 <th>Poblacion</th>
+                
                 <th>Descripción</th>
                 <th>Fecha</th>
                 <th>Activo</th>
@@ -40,7 +46,7 @@
                 <th>Opciones</th>
                 </tr>
             </thead>
-            <tbody id="list_post">
+            <tbody >
             </tbody>
             </table>
                 </div>
@@ -66,12 +72,13 @@
                 <input type="hidden" id="id_post_sel" >
                 <input type="hidden" id="title_post_sel" >
                 <button type="button" id="btn_cancelar" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-                <button type="button" id="btn_eliminar" class="btn btn-primary" onclick="del_comunicado()">Eliminar</button>
+                <button type="button" id="btn_eliminar" class="btn btn-primary" data-dismiss="modal" onclick="realizarAccion()">Eliminar</button>
             </div>
         </div>
     </div>
 </div>
 <script>
+/*
 function get_list_post() {
     $.post(baseurl+"blog/get_lista_post",{}, 
         function(data){
@@ -152,11 +159,5 @@ function mensajes(tipo, id_post, titulo_post) {
     exito     : '<h1><span class="fa fa-check"></span></h1><span class="text-left"> El Post: <strong id="title_post2"></strong> con ID: <strong id="id_post2"></strong> se eliminó correctamente.</span>',
     no_exito  : '<h1><span class="fa fa-times"></span></h1><span class="text-left"> No se pudo eliminar el Post: <strong id="title_post3"></strong> con ID: <strong id="id_post3"></strong>. Comuníquese con el Administrador del sistema.</span>',
     };
-/*
-$(document).ready(function() {
-    $('#list_post_table').DataTable({
-        "order": [ 6, 'desc' ]
-    });
-} );
 */
 </script>
