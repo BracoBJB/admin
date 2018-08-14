@@ -29,7 +29,7 @@ var table = $('#list_post_table').DataTable({
         {data: 'permite_comentario'},
         {"orderable":false,
              render:function(data,type,row) {
-                return `<a class="btn btn-success btn-sm" href="<?= base_url() ?>blog/post/`+row.id_post+`" role="button">
+                return `<a class="btn btn-success btn-sm" href="`+baseurl+`blog/post/`+row.id_post+`" role="button">
                 <i class="fa fa-pencil"></i>
                 </a>
                 <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modalMensajes" role="button" onclick="seguro_del('`+row.id_post+`','`+row.titulo+`')" ><i class="fa fa-times"></i>
@@ -69,7 +69,38 @@ var table = $('#list_post_table').DataTable({
             'targets': [5],
             "visible": false,
             "searchable": false
-        }
+        },
+        {
+            'targets': [7],
+            'data': "carrera",
+            'render': function(data,type,row) {
+                
+                var result = "<span><i class='fa fa-calendar'></i> &nbsp;"+data+"</span>";
+
+                if(row.activo == 't') {
+                    result += "<br><span style='color:green;'><i class='fa fa-check'></i>&nbsp;Activo</span>";
+                } else {
+                    result += "<br><span style='color:red;'><i class='fa fa-times'></i>Activo &nbsp;No Activo</span>";
+                }
+                if(row.permite_comentario == 't') {
+                    result += "<br><span style='color:green;'><i class='fa fa-comments'></i>&nbsp;Permite</span>";
+                } else {
+                    result += "<br><span style='color:green;'><i class='fa fa-comments'></i>&nbsp;No Permite</span>";
+                }
+                return result;
+                
+            }
+        },
+        {
+            'targets': [8],
+            "visible": false,
+            "searchable": false
+        },
+        {
+            'targets': [9],
+            "visible": false,
+            "searchable": false
+        },
     ],
     "order": [[ 0, 'asc' ]]
 });

@@ -28,22 +28,22 @@
             <table id="list_post_table" class="table table-striped table-bordered">
             <thead>
                 <tr>
-                <th>Id</th>
-                <th>Post</th>
+                <th style="width:5%;background-color:#006699;color: white;">Id</th>
+                <th style="width:15%;background-color:#006699;color: white;">Post</th>
                 
                 <th>Tema</th>
                 <th>Autor(es)</th>
                 
                 
-                <th>Carrera</th>
+                <th style="width:10%;background-color:#006699;color: white;">Carrera</th>
                 
                 <th>Poblacion</th>
                 
-                <th>Descripción</th>
-                <th>Fecha</th>
+                <th style="width:50%;background-color:#006699;color: white;">Descripción</th>
+                <th style="width:10%;background-color:#006699;color: white;">Conf.</th>
                 <th>Activo</th>
                 <th>Permite Comentarios</th>
-                <th>Opciones</th>
+                <th style="width:10%;background-color:#006699;color: white;">Opciones</th>
                 </tr>
             </thead>
             <tbody >
