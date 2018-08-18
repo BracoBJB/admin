@@ -41,18 +41,18 @@
                     <li>
                         <a href="<?= base_url()?>/comunicados/lista"> <i class="menu-icon ti-view-list"></i>Listado</a>
                     </li> 
-                    <h3 class="menu-title">Blog</h3><!-- /.menu-title -->
+                    <h3 class="menu-title">Post</h3><!-- /.menu-title -->
                     <li>
-                        <a href="<?= base_url()?>blog/post"> <i class="menu-icon ti-write"></i>Nuevo </a>
+                        <a href="<?= base_url()?>blog/post"> <i class="menu-icon fa fa-pencil-square"></i>Nuevo </a>
                     </li>
                     <li>
-                        <a href="<?= base_url()?>blog/lista"> <i class="menu-icon ti-view-list"></i>Listado</a>
+                        <a href="<?= base_url()?>blog/lista"> <i class="menu-icon fa  fa-th-list"></i>Listado</a>
                     </li> 
                     <li>
-                        <a href="<?= base_url()?>blog/comentarios"> <i class="menu-icon ti-view-list"></i>Control de comentarios</a>
+                        <a href="<?= base_url()?>blog/comentarios"> <i class="menu-icon fa fa-comments"></i>Control de comentarios</a>
                     </li> 
                     <li>
-                        <a href="<?= base_url()?>blog/lista_blocked"> <i class="menu-icon ti-view-list"></i>Bloqueados</a>
+                        <a href="<?= base_url()?>blog/lista_blocked"> <i class="menu-icon fa fa-ban"></i>Bloqueados</a>
                     </li> 
                 </ul>
             </div><!-- /.navbar-collapse -->
