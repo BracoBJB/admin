@@ -14,7 +14,8 @@ class Material extends CI_Controller
 		}
 		$usuario=$this->session->userdata('username');
 		$data= array('titulo'=> 'Lista de Material Académico Publicado');
-			$onload='onload="get_lista()"';
+			$onload='onload=""';
+			// $onload='onload="get_lista()"';
 
 		$this->load->view("head",$data);
 		$data= array('user'=> $usuario,'onLoad'=>$onload);
@@ -23,39 +24,53 @@ class Material extends CI_Controller
 		$this->load->view("material/lista_material");
 		$this->load->view("footer");
 	}	
+	// public function get_lista2()
+	// {
+	// 	$resultado='';
+	// 	$get_lista=$this->consultas->get_lista_material();
+	// 	if($get_lista!=null)
+	// 		foreach ($get_lista ->result() as $fila) {
+	// 			$get_grupos=$this->consultas->get_material_grupo($fila->id_material);
+	// 			$grupos='';
+	// 			if($get_grupos!=null)
+	// 				foreach ($get_grupos ->result() as $row) {
+	// 				$grupos.=$row->cod_grupo.'<br>';
+	// 				}
+	// 			$nom_docente=$this->consultas->get_nom_docente($fila->cod_docente);
+	// 			$nom_materia=$fila->cod_materia.' '.$this->consultas->get_nom_materia($fila->cod_materia,$fila->carrera);
+
+	// 			$fecha_nueva= explode("-", $fila->fecha);
+ //                $fecha=$fecha_nueva[2].'/'.$fecha_nueva[1].'/'.$fecha_nueva[0];
+ //                $resultado.='<tr id="'.$fila->id_material.'">
+	// 	                        <td>'.$fila->id_material.'</td>
+	// 	                        <td>'.$fila->titulo.'</td>
+	// 	                        <td>'.$fecha.'</td>
+	// 							<td>'.$fila->contenido.'</td>								
+	// 							<td>'.$fila->gestion.'</td>
+	// 							<td>'.$fila->carrera.'</td>
+	// 							<td>'.$nom_docente.'</td>
+	// 							<td>'.$nom_materia.'</td>
+	// 							<td>'.$grupos.'</td>
+	// 							<td>'.$fila->nom_archivo.'</td>
+	// 							<td nowrap><button class="btn btn-success btn-sm"  onclick=\'edit_material('.$fila->id_material.');\'><span class="fa fa-pencil"></span></button>
+	// 								<button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modalMensajes" onclick=\'seguro_del('.$fila->id_material.',"'.$fila->titulo.'");\' ><i class="fa fa-times"></i></button></td>
+	// 						</tr>';
+	// 		}
+	// 	echo $resultado;
+	// }
 	public function get_lista()
 	{
-		$resultado='';
 		$get_lista=$this->consultas->get_lista_material();
-		if($get_lista!=null)
-			foreach ($get_lista ->result() as $fila) {
-				$get_grupos=$this->consultas->get_material_grupo($fila->id_material);
-				$grupos='';
-				if($get_grupos!=null)
-					foreach ($get_grupos ->result() as $row) {
-					$grupos.=$row->cod_grupo.'<br>';
-					}
-				$nom_docente=$this->consultas->get_nom_docente($fila->cod_docente);
-				$nom_materia=$fila->cod_materia.' '.$this->consultas->get_nom_materia($fila->cod_materia,$fila->carrera);
-
-				$fecha_nueva= explode("-", $fila->fecha);
-                $fecha=$fecha_nueva[2].'/'.$fecha_nueva[1].'/'.$fecha_nueva[0];
-                $resultado.='<tr id="'.$fila->id_material.'">
-		                        <td>'.$fila->id_material.'</td>
-		                        <td>'.$fila->titulo.'</td>
-		                        <td>'.$fecha.'</td>
-								<td>'.$fila->contenido.'</td>								
-								<td>'.$fila->gestion.'</td>
-								<td>'.$fila->carrera.'</td>
-								<td>'.$nom_docente.'</td>
-								<td>'.$nom_materia.'</td>
-								<td>'.$grupos.'</td>
-								<td>'.$fila->nom_archivo.'</td>
-								<td nowrap><button class="btn btn-success btn-sm"  onclick=\'edit_material('.$fila->id_material.');\'><span class="fa fa-pencil"></span></button>
-									<button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modalMensajes" onclick=\'seguro_del('.$fila->id_material.',"'.$fila->titulo.'");\' ><i class="fa fa-times"></i></button></td>
-							</tr>';
-			}
-		echo $resultado;
+		echo json_encode($get_lista);
+	}
+	function file_exist()
+	{
+        $name_file=$_POST['name_file'];
+		$file = "plantillas\archivos\\".$name_file;
+		if(is_file( $file ))
+			echo "true";
+		else
+			echo "false";
 	}
 	public function nuevo()
 	{
@@ -86,7 +101,7 @@ class Material extends CI_Controller
           $titulo=$_POST['titulo'];
           $incluir_archivo=$_POST['incluir_archivo'];
           $contenido=$_POST['contenido'];
-          $nombre_archivo='';
+          $nombre_archivo=$_POST['nombre_archivo'];
 		  $gestion=$this->consultas->get_last_gestion()->row()->valor;
 
           if($incluir_archivo=='true')
@@ -178,12 +193,20 @@ class Material extends CI_Controller
 	public function del_material()
 	{
 		$id=$_POST['id'];
-		
-		$where = array(
-			'id_material' => $id,
-			);
-			$this->consultas->delete_table('est_material',$where);
-			$this->consultas->delete_table('est_material_grupo',$where);
+		$where = array('id_material' => $id,);
+		$nom_archivo=$this->consultas->get_nom_archivo($id);
+		if(strlen($nom_archivo)>0)
+		{
+			$sql="SELECT nom_archivo FROM est_material WHERE nom_archivo = '$nom_archivo' AND id_material <> $id";
+			$resultado=$this->consultas->consulta_SQL($sql);
+			if($resultado==null)
+			{
+				$file = "plantillas/archivos/".$nom_archivo;
+				unlink($file);
+			}
+		}
+		$this->consultas->delete_table('est_material',$where);
+		$this->consultas->delete_table('est_material_grupo',$where);
 		echo 'exito';
 	}
 	public function edit_material($id)
@@ -290,44 +313,61 @@ class Material extends CI_Controller
 	}
 	public function modificar()
 	{
-		$titulo=$_POST['titulo'];
-		$carrera=$_POST['carrera'];
-		$select_poblacion=$_POST['select_poblacion'];
-		$grupo_sel=$_POST['grupo_sel'];
-		$fecha_ini=$_POST['fecha_ini'];
-		$fecha_fin=$_POST['fecha_fin'];
-		$contenido=$_POST['contenido'];
-		$habilitado=$_POST['habilitado'];
-		$id=$_POST['id'];
-		$prioridad=$_POST['prioridad'];
-		$contador=0;
+
+		  $carrera=$_POST['carrera'];
+          $docente=$_POST['docente'];
+          $materias=$_POST['materias'];
+          $grupo_sel=$_POST['grupo_sel'];
+          $titulo=$_POST['titulo'];
+          $incluir_archivo=$_POST['incluir_archivo'];
+          $contenido=$_POST['contenido'];
+          $nombre_archivo=$_POST['nombre_archivo'];
+		  $gestion=$this->consultas->get_last_gestion()->row()->valor;
+		  $id=$_POST['id'];
+
+          if($incluir_archivo=='true')
+          {
+	            $grupo_sel=explode(',',$grupo_sel);
+				$archivo = $_FILES['archivo'];
+	          	$nombre = strtolower($archivo['name']);
+				$temporal = $archivo['tmp_name'];
+				$partesNombre = explode('.', $nombre);
+				$extensionArchivo = end($partesNombre);
+				$nuevoNombre = rand(1000000000, 9999999999). '.' . $extensionArchivo;
+				$nueva_ruta=$_SERVER['DOCUMENT_ROOT'].'/admin/plantillas/archivos/'.$nombre;
+				// $nueva_ruta=$_SERVER['DOCUMENT_ROOT'].'/admin/plantillas/archivos/'.$nuevoNombre;
+				// print_r($_FILES);
+				// echo $temporal.'-'.$nueva_ruta;
+				move_uploaded_file($temporal,$nueva_ruta);
+	          	$nombre_archivo=$nombre;
+          }
 		$data = array(
+						'gestion' =>$gestion,
 						'titulo' =>$titulo,
-						'descripcion' =>$contenido,
-						'prioridad' =>$prioridad,
-						'fecha_ini' =>$fecha_ini,
-						'fecha_fin' =>$fecha_fin,
-						'habilitado' =>$habilitado,	
-						'carrera' =>$carrera,					 
-						);
+						'contenido' =>$contenido,
+						'cod_docente' =>$docente,
+						'nom_archivo' =>$nombre_archivo,
+						'url' =>$nombre_archivo,
+						'carrera' =>$carrera,
+						// 'fecha' =>date('Y-m-d H:i:s'),	
+						'cod_materia' =>$materias,	
+						);	
 		$where = array(
-						'id_aviso' =>$id,											 
+						'id_material' =>$id,											 
 						);			
-		$this->consultas->update_table('est_avisos',$data,$where);
+		$this->consultas->update_table('est_material',$data,$where);
 		$data = array(
-				'id_aviso' =>$id,
-				'id_poblacion' =>$select_poblacion,
+				'id_material' =>$id,
 				);
-		$this->consultas->delete_table('est_avisos_poblacion',$where);
+		$this->consultas->delete_table('est_material_grupo',$where);
 		for ($i=0; $i < count($grupo_sel); $i++) { 
 			$data = array(
-				'id_aviso' =>$id,
-				'id_poblacion' =>$select_poblacion,
-				'item' =>$grupo_sel[$i],
+				'id_material' =>$id,
+				'cod_grupo' =>$grupo_sel[$i],
 				);			
-			$this->consultas->insert_table('est_avisos_poblacion',$data);
+			$this->consultas->insert_table('est_material_grupo',$data);
 		}
-		echo 'exito';
+		echo 'exito';	
 	}
 		
 }

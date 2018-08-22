@@ -345,11 +345,11 @@ $('#sandbox-container input').datepicker({
     autoclose: true,
     todayHighlight: true,
     daysOfWeekHighlighted: "0",
-            minDate: '0' ,
+            startDate: "0d" ,
 });
 
 $('#sandbox-container .input-daterange').datepicker({
-            minDate: '0' ,
+            // minDate: "+0m +0d" ,
 });
 
 $('#btn_ver_lista').click(function () {

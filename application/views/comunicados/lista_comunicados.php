@@ -28,15 +28,11 @@
                             <thead>
                               <tr>
                                 <th>ID</th>
-                                <th>Título</th>
-                                <th>Fecha Inicio</th>
-                                <th>Fecha Fin</th>
+                                <th>Título<br>Fecha in<br>Fecha fin</th>
+                                <th>Carrera Prioridad Poblacion</th>
                                 <th>Contenido</th>
-                                <th>Población</th>
-                                <th>Carrera</th>
-                                <th>Prioridad</th>
         						<th>Habilitado</th>
-        						<th></th>
+        						<th>Opciones</th>
                               </tr>
                             </thead>
                             <tbody id="listado">
@@ -73,21 +69,101 @@
     </div>
 </div>
 <script >
-function get_lista() {
-    $.post(baseurl+"Comunicados/get_lista",
-        {   
-            
-        }, 
-        function(data){
-            $('#listado').html(data);
-            $("#lista_avisos").DataTable({
-                "language": {
-                    "url": baseurl +"plantillas/js/spanish.json"
-                },
-    "order": [ 2, 'desc' ]
+    var baseurl="<?=base_url();?>";
+var table = $('#lista_avisos').DataTable({
+    "language": {
+        "url": baseurl +"plantillas/js/spanish.json"
+    },
+    'lengthMenu':[[10,25,50,-1],[10,25,50,"Todo"]],
+    'pagingType': "full_numbers",
+    'paging':true,
+    'info': true,
+    'filter':true,
+    'stateSave':false,
+    'ajax' : {
+        'url': baseurl+"Comunicados/get_lista",
+        'type': "POST",
+        'data': {
+        },
+        dataSrc:''
+    },
+    'columns':[
+        {data: 'id_aviso'},
+        {data: 'titulo'},
+        {data: 'gestion'},
+        {data: 'descripcion'},
+        {data: 'poblacion'},
+        {"orderable":false,          
+             render:function(data,type,row) {
+                return `<a class="btn btn-success btn-sm" href="<?= base_url() ?>Comunicados/edit_comunicado/`+row.id_aviso+`" role="button">
+                <i class="fa fa-pencil"></i>
+                </a>
+                <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modalMensajes" role="button" onclick="seguro_del('`+row.id_aviso+`','`+row.titulo+`')" ><i class="fa fa-times"></i>
+                </button>`;
+             }
+        },
+    ],
+    'columnDefs': [
+        {
+            'targets': [1],
+            'data': "titulo",
+            'render': function(data,type,row) {
+                return "<span><i class='fa fa-bookmark-o'></i> &nbsp;"+row.titulo+"</span>"+
+                        "<br><span><i class='fa fa-sign-in'></i> &nbsp;"+new_date(row.fecha_ini)+"</span>"+
+                        "<br><span><i class='fa fa-sign-out'></i> &nbsp;"+new_date(row.fecha_fin)+"</span>";
+            }
+        },
+        {
+            'targets': [2],
+            'data': "carrera",
+            'render': function(data,type,row) {
+                return "<span><i class='fa fa-suitcase'></i> &nbsp;"+row.carrera+"</span>"+
+                        "<br><span><i class='fa fa-flag'></i> &nbsp;"+row.nombre+"</span>"+
+                        "<br><span><i class='fa fa-users'></i> &nbsp;"+row.poblacion+"</span>";
+            }
+        },
+        {
+            'targets': [3],
+            "visible": true,
+            "searchable": false
+        },
+        {
+            'targets': [4],
+            'data': "carrera",
+            'render': function(data,type,row) {
+                return "<label class='switch switch-3d switch-info'><input type='checkbox' class='switch-input' id='habilitado'"+habilitado(row.habilitado)+" disabled><span class='switch-label'></span><span class='switch-handle'></span></label>";
+            }
+        }
+    ],
+    "order": [[ 0, 'desc' ]]
 });
-        });
+function new_date(old_date)
+{
+    res = old_date.split("-");
+    return (res[2]+'/'+res[1]+'/'+res[0]);
 }
+function habilitado(habilitado)
+{
+    estado='checked';
+    if(habilitado=='f')
+        estado='';
+    return estado;
+}
+// function get_lista() {
+//     $.post(baseurl+"Comunicados/get_lista",
+//         {   
+            
+//         }, 
+//         function(data){
+//             $('#listado').html(data);
+//             $("#lista_avisos").DataTable({
+//                 "language": {
+//                     "url": baseurl +"plantillas/js/spanish.json"
+//                 },
+//     "order": [ 2, 'desc' ]
+// });
+//         });
+// }
 function del_comunicado() {
     id_aviso=$('#id_comunicado_sel').val();
     $("#btn_eliminar").prop('disabled',true);
@@ -100,7 +176,8 @@ function del_comunicado() {
             if(data=='exito')
             {
                 mensajes('exito',id_aviso,$('#title_comunicado_sel').val());
-                get_lista();
+                table.ajax.reload();
+                // get_lista();
             }
             else
                 mensajes('no_exito',id_aviso,$('#title_comunicado_sel').val());

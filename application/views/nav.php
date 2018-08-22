@@ -27,10 +27,10 @@
                     </li> -->
                     <h3 class="menu-title">Material Académico</h3><!-- /.menu-title -->
                     <li>
-                        <a href="<?= base_url()?>/material/material/nuevo"> <i class="menu-icon ti-write"></i>Nuevo </a>
+                        <a href="<?= base_url()?>/material/material/nuevo"> <i class="menu-icon fa fa-file-text-o"></i>Nuevo </a>
                     </li>
                     <li>
-                        <a href="<?= base_url()?>/material/material/lista"> <i class="menu-icon ti-view-list"></i>Listado</a>
+                        <a href="<?= base_url()?>/material/material/lista"> <i class="menu-icon fa fa-files-o"></i>Listado</a>
                     </li>
 
                     <h3 class="menu-title">Comunicados</h3><!-- /.menu-title -->
@@ -39,17 +39,17 @@
                         <a href="<?= base_url()?>/comunicados/nuevo"> <i class="menu-icon ti-write"></i>Nuevo </a>
                     </li>
                     <li>
-                        <a href="<?= base_url()?>/comunicados/lista"> <i class="menu-icon ti-view-list"></i>Listado</a>
+                        <a href="<?= base_url()?>/comunicados/lista"> <i class="menu-icon fa fa-list-alt"></i>Listado</a>
                     </li> 
                     <h3 class="menu-title">Post</h3><!-- /.menu-title -->
                     <li>
                         <a href="<?= base_url()?>blog/post"> <i class="menu-icon fa fa-pencil-square"></i>Nuevo </a>
                     </li>
                     <li>
-                        <a href="<?= base_url()?>blog/lista"> <i class="menu-icon fa  fa-th-list"></i>Listado</a>
+                        <a href="<?= base_url()?>blog/lista"> <i class="menu-icon fa fa-th-list"></i>Listado</a>
                     </li> 
                     <li>
-                        <a href="<?= base_url()?>blog/comentarios"> <i class="menu-icon fa fa-comments"></i>Control de comentarios</a>
+                        <a href="<?= base_url()?>blog/comentarios"> <i class="menu-icon fa fa-comments"></i>Moderar comentarios</a>
                     </li> 
                     <li>
                         <a href="<?= base_url()?>blog/lista_blocked"> <i class="menu-icon fa fa-ban"></i>Bloqueados</a>
@@ -72,7 +72,7 @@
 
                 <div class="col-sm-7">
                     <a id="menuToggle" class="menutoggle pull-left"><i class="fa fa fa-tasks"></i></a>
-                    <div class="header-left">
+                    <!-- <div class="header-left">
                         <button class="search-trigger"><i class="fa fa-search"></i></button>
                         <div class="form-inline">
                             <form class="search-form">
@@ -82,7 +82,7 @@
                         </div>
 
                         
-                    </div>
+                    </div> -->
                 </div>
 
                 <div class="col-sm-5">
@@ -93,11 +93,11 @@
                         </a>
 
                         <div class="user-menu dropdown-menu">
-                                <a class="nav-link" href="#"><i class="fa fa- user"></i>My Profile</a>
+                                <!-- <a class="nav-link" href="#"><i class="fa fa- user"></i>My Profile</a>
 
                                 <a class="nav-link" href="#"><i class="fa fa- user"></i>Notifications <span class="count">13</span></a>
 
-                                <a class="nav-link" href="#"><i class="fa fa -cog"></i>Settings</a>
+                                <a class="nav-link" href="#"><i class="fa fa -cog"></i>Settings</a> -->
 
                                 <a class="nav-link" href="<?=site_url('index/logout')?>"><i class="fa fa-power -off"></i>Desconectarse</a>
                         </div>

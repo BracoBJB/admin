@@ -29,15 +29,11 @@
                               <tr>
                                 <th>ID</th>
                                 <th>Título</th>
-                                <th>Fecha Public.</th>
+                                <th>Gestion Carrera</th>
                                 <th>Contenido</th>
-                                <th>Gestion</th>
-                                <th>Carrera</th>
-                                <th>Docente</th>
-                                <th>Materia</th>
-                                <th>Grupo</th>
+                                <th>Materia Grupos</th>
         						<th>Archivo</th>
-        						<th></th>
+        						<th>Opciones</th>
                               </tr>
                             </thead>
                             <tbody id="listado">
@@ -74,21 +70,89 @@
     </div>
 </div>
 <script >
-function get_lista() {
-    $.post(baseurl+"material/material/get_lista",
-        {   
-            
-        }, 
-        function(data){
-            $('#listado').html(data);
-            $("#lista_material").DataTable({
-                "language": {
-                    "url": baseurl +"plantillas/js/spanish.json"
-                },
-            "order": [0, 'desc' ]
-            });
-        });
+    $(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip(); 
+});
+var baseurl="<?=base_url();?>";
+var table = $('#lista_material').DataTable({
+    "language": {
+        "url": baseurl +"plantillas/js/spanish.json"
+    },
+    'lengthMenu':[[10,25,50,-1],[10,25,50,"Todo"]],
+    'pagingType': "full_numbers",
+    'paging':true,
+    'info': true,
+    'filter':true,
+    'stateSave':false,
+    'ajax' : {
+        'url': baseurl+"material/material/get_lista",
+        'type': "POST",
+        'data': {
+        },
+        dataSrc:''
+    },
+    'columns':[
+        {data: 'id_material'},
+        {data: 'titulo'},
+        {data: 'gestion'},
+        {data: 'contenido'},
+        {data: 'cod_materia'},
+        {data: 'nom_archivo'},
+        {"orderable":false,          
+             render:function(data,type,row) {
+                return `<a class="btn btn-success btn-sm" href="<?= base_url() ?>material/material/edit_material/`+row.id_material+`" role="button">
+                <i class="fa fa-pencil"></i>
+                </a>
+                <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modalMensajes" role="button" onclick="seguro_del('`+row.id_material+`','`+row.titulo+`')" ><i class="fa fa-times"></i>
+                </button>`;
+             }
+        },
+    ],
+    'columnDefs': [
+        {
+            'targets': [1],
+            'data': "titulo",
+            'render': function(data,type,row) {
+                return "<span data-toggle='tooltip' data-placement='top' title='Titulo'><i class='fa fa-bookmark-o'></i> &nbsp;"+row.titulo+"</span>"+
+                        "<br><span data-toggle='tooltip' data-placement='top' title='Fecha de Publicación'><i class='fa fa-calendar'></i> &nbsp;"+new_date(row.fecha)+"</span>"+
+                        "<br><span data-toggle='tooltip' data-placement='top' title='Docente'><i class='fa fa-user'></i> &nbsp;"+row.nom_docente+"</span>";
+            }
+        },
+        {
+            'targets': [2],
+            'data': "carrera",
+            'render': function(data,type,row) {
+                return "<span data-toggle='tooltip' data-placement='top' title='Gestión'><i class='fa fa-cog'></i> &nbsp;"+row.gestion+"</span>"+
+                        "<br><span data-toggle='tooltip' data-placement='top' title='Carrera'><i class='fa fa-suitcase'></i> &nbsp;"+row.carrera+"</span>";
+            }
+        },
+        {
+            'targets': [3],
+            "visible": true,
+            "searchable": false
+        },
+        {
+            'targets': [4],
+            'data': "carrera",
+            'render': function(data,type,row) {
+                return "<span data-toggle='tooltip' data-placement='top' title='Materia'><i class='fa fa-book'></i> &nbsp;"+row.cod_materia+" "+row.nom_materia+"</span>"+
+                        "<br><span data-toggle='tooltip' data-placement='top' title='Grupos'><i class='fa fa-users'></i> &nbsp;"+row.poblacion+"</span>";
+            }
+        },
+       {
+            'targets': [5],
+            "visible": true,
+            "searchable": false
+        }
+    ],
+    "order": [[ 0, 'desc' ]]
+});
+function new_date(old_date)
+{
+    res = old_date.split("-");
+    return (res[2]+'/'+res[1]+'/'+res[0]);
 }
+
 function del_material() {
     id_aviso=$('#id_material_sel').val();
     $("#btn_eliminar").prop('disabled',true);
@@ -101,7 +165,9 @@ function del_material() {
             if(data=='exito')
             {
                 mensajes('exito',id_aviso,$('#title_material_sel').val());
-                get_lista();
+                table.ajax.reload();
+                $('[data-toggle="tooltip"]').tooltip(); 
+
             }
             else
                 mensajes('no_exito',id_aviso,$('#title_material_sel').val());
@@ -118,9 +184,9 @@ function edit_material(id_aviso) {
 }
 
 mensage = {    
-    seguro_del: '<h1><span class="fa fa-exclamation-triangle"></span></h1><span class="text-left"> Está seguro de querer eliminar el material con título: <strong id="title_material"></strong> con ID: <strong id="id_material"></strong>?</span>',
-    exito     : '<h1><span class="fa fa-check"></span></h1><span class="text-left"> El Comunicado: <strong id="title_material2"></strong> con ID: <strong id="id_material2"></strong> se eliminó correctamente.</span>',
-    no_exito  : '<h1><span class="fa fa-times"></span></h1><span class="text-left"> No se pudo eliminar el Comunicado: <strong id="title_material3"></strong> con ID: <strong id="id_material3"></strong>. Comuníquese con el Administrador del sistema.</span>',
+    seguro_del: '<h1><span class="fa fa-exclamation-triangle"></span></h1><span class="text-left"> Está seguro de querer eliminar el Material con título: <strong id="title_material"></strong> con ID: <strong id="id_material"></strong>?</span>',
+    exito     : '<h1><span class="fa fa-check"></span></h1><span class="text-left"> El Material: <strong id="title_material2"></strong> con ID: <strong id="id_material2"></strong> se eliminó correctamente.</span>',
+    no_exito  : '<h1><span class="fa fa-times"></span></h1><span class="text-left"> No se pudo eliminar el Material: <strong id="title_material3"></strong> con ID: <strong id="id_material3"></strong>. Comuníquese con el Administrador del sistema.</span>',
     };
 function mensajes(tipo, data1, data2) {
     $("#btn_eliminar").prop('disabled',false);

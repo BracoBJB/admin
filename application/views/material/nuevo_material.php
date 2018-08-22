@@ -97,15 +97,34 @@
                                 <input type="text" id="titulo" name="titulo" placeholder="Ingrese el título del material" class="form-control" value="<?php if ( isset($get_material)) echo $get_material->row()->titulo; ?>">
                             </div>
                             <div class="form-group">
-                                <label class="switch switch-3d switch-info mr-3"><input type="checkbox" class="switch-input" checked="true" id="archivo"> <span class="switch-label"></span> <span class="switch-handle"></span></label><label class="control-label col-sm-4" for="archivo"> Incluir archivo</label>
+                                <label class="switch switch-3d switch-info mr-3"><input type="checkbox" class="switch-input" <?php if ( isset($get_material)) 
+                                { 
+                                    if($get_material->row()->nom_archivo=='')
+                                        echo '';
+                                    else echo 'checked';
+                                }
+                                else echo 'checked';?> id="archivo">
+                                 <span class="switch-label"></span> <span class="switch-handle"></span></label><label class="control-label col-sm-4" for="archivo"> Incluir archivo</label>
                             </div>
                             <div class="input-group">
                                <label class="input-group-prepend ">
-                                    <span id="btn_archivo" class="input-group-btn btn btn-primary ">
-                                        Seleccione un archivo&hellip; <span  class="fa fa-spinner fa-spin " id="spinner_file" style="display:none;"></span ><input type="file" name="file" id="file" style="display: none;">
+                                    <span id="btn_archivo" class="input-group-btn btn <?php if ( isset($get_material)) 
+                                                { 
+                                                    if($get_material->row()->nom_archivo=='')
+                                                        echo 'btn-secondary';
+                                                    else echo 'btn-primary';
+                                                }
+                                                else echo 'btn-primary';?> ">
+                                        Seleccione un archivo&hellip; <span  class="fa fa-spinner fa-spin " id="spinner_file" style="display:none;"></span ><input type="file" name="file" id="file" style="display: none;"  <?php if ( isset($get_material)) 
+                                                { 
+                                                    if($get_material->row()->nom_archivo=='')
+                                                        echo 'disabled';
+                                                    else echo '';
+                                                }
+                                                else echo '';?> >
                                     </span>
                                 </label>
-                                <input type="text" class="form-control" id="leyenda_files" readonly style="height: 38px" >
+                                <input type="text" class="form-control" id="leyenda_files" readonly style="height: 38px" value="<?php if ( isset($get_material)) echo $get_material->row()->nom_archivo; ?>">
                             </div>
                             <div class="form-group">
                                 <label for="editor1" class="form-control-label">Contenido</label>
@@ -160,9 +179,12 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" id="btn_cancelar" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                        <button type="button" id="btn_cancelar2" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
                         <button type="button" id="btn_continuar" class="btn btn-primary" data-dismiss="modal">Agregar Otro</button>
                         <button type="button" id="btn_registrar" class="btn btn-primary">Registrar</button>
                         <button type="button" id="btn_ver_lista" class="btn btn-primary" data-dismiss="modal">Ver Lista</button>
+                        <button type="button" id="btn_reemplazar" class="btn btn-primary" data-dismiss="modal">Reemplazar</button>
+                        <button type="button" id="btn_conservar" class="btn btn-primary" data-dismiss="modal">Conservar</button>
                     </div>
                 </div>
             </div>
@@ -186,7 +208,10 @@
       }
       return peticion;
     }
+var reemplazar=false;
+var conservar=false;
 var titulo_existe=false;
+var archivo_existe=false;
 var con_archivo=true;
 var size_archivo=false;
 var id_sel="<?php if(isset($id_sel)) echo $id_sel; else echo '';?>";
@@ -221,25 +246,42 @@ function get_grupo() {
     });
 }
 function filePreview(input) {
+    reemplazar=false;
+    conservar=false;
+
     if (input.files && input.files[0]) {
         $('#spinner_file').show();
-        var reader = new FileReader();
-        reader.onload = function (e) {
-            file_size=(input.files[0].size/1024/1024).toFixed(2);
-
-            $('#leyenda_files').val(input.files[0].name+' ('+file_size+' MB)');
-            if(file_size>128)
+        archivo_existe=false;
+        $.post(baseurl+"/material/material/file_exist",
+        {   
+            name_file:input.files[0].name,
+        }, 
+        function(data){
+            if(data=='true')
             {
-                mensajes('archivogrande');
-                size_archivo=true;
+                archivo_existe=true;
+                mensajes('archivoexiste');
+                    $('#spinner_file').hide();
             }
-            else
-                size_archivo=false;
-
-            $('#spinner_file').hide();
-
-        }
-        reader.readAsDataURL(input.files[0]);
+            // else
+            {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    file_size=(input.files[0].size/1024/1024).toFixed(2);
+                    $('#leyenda_files').val(input.files[0].name+' ('+file_size+' MB)');
+                    if(file_size>128)
+                    {
+                        if(!archivo_existe)
+                        mensajes('archivogrande');
+                        size_archivo=true;
+                    }
+                    else
+                        size_archivo=false;
+                    $('#spinner_file').hide();
+                }
+                reader.readAsDataURL(input.files[0]);  
+            }
+        });  
     }
 }
 $("#archivo").change(function () {
@@ -257,37 +299,21 @@ $("#archivo").change(function () {
     }
 
 });
+$("#btn_continuar").click(function () {
+    reemplazar=true;
+});
+$("#btn_conservar").click(function () {
+    conservar=true;
+});
+$("#btn_cancelar2").click(function () {
+    $('#leyenda_files').val('');
+    $('#file').val('');
+});
 $("#file").change(function () {
     filePreview(this);
 });
-
 $('#titulo').blur(function () {
     rectificar_('titulo');
-    // if($('#titulo').val().length>0)
-    // {
-    //     $('#titulo').prop('disabled', true);
-    //     $('#spinner').show();
-    //     $.post(baseurl+"material/material/verificar_titulo",
-    //     {   
-    //         titulo:$('#titulo').val(),
-    //         cod_carrera:$('#cod_carrera').val(),
-    //     }, 
-    //     function(data){
-    //         if(data=='0')
-    //         {
-    //             $("#titulo" ).removeClass("is-invalid");
-    //             titulo_existe=false;
-    //         }
-    //         else
-    //         {
-    //             $("#titulo" ).addClass("is-invalid");
-    //             mensajes('alerta_existe_titulo',$('#titulo').val());
-    //             titulo_existe=true;
-    //         }
-    //         $('#titulo').prop('disabled', false);
-    //         $('#spinner').hide();
-    //     });
-    // }
 })
 function rectificar_(cadena_nombre) {
     cadena= $('#'+cadena_nombre).val().trim().split(' ');
@@ -347,10 +373,21 @@ function validar() {
     }
     if($('#archivo').is(':checked'))
     {
-        if ($("#file")[0].files.length == 0)
+        if(id_sel.length==0)
         {
-            alerta+=mensage.archivo;
-            control=false;
+            if ($("#file")[0].files.length == 0)
+            {
+                alerta+=mensage.archivo;
+                control=false;
+            }
+        }
+        else
+        {
+            if (($("#file")[0].files.length == 0)&&($("#leyenda_files").val().length == 0))
+            {
+                alerta+=mensage.archivo;
+                control=false;
+            }
         }
     }
     if(size_archivo)
@@ -395,76 +432,89 @@ function registro_no_exito() {
 $('#btn_registrar').click(function () {
     if($('#archivo').is(':checked'))
     {
-        $("#barra" ).removeClass("bg-success").addClass("bg-info");
+        if(conservar)
+        {
+            archivo = document.getElementById("file");
+            cargar_sin_archivo(archivo.files[0].name);
+        }
+        else
+        {
+            $("#barra" ).removeClass("bg-success").addClass("bg-info");
                 $('#barra').attr('aria-valuenow', '0%').css('width','0%');
                 $('#barra').html('0%');
                 $("#contenido_mensages").attr("class","alert alert-info text-center");
                     $('#contenido_mensages').html(mensage.registrando);
                     $('#modalTitle').html('Registrando datos');
                     $("#btn_registrar").attr('disabled',true);    
-        setTimeout (function () {
+            setTimeout (function () {
 
-                    $("#progres_bar").show();    
-        var archivo = document.getElementById("file");
-        var informacion = new FormData();
-          informacion.append("archivo", archivo.files[0]);
-          informacion.append("carrera",$('#cod_carrera').val());
-          informacion.append("docente",$('#docente').val());
-          informacion.append("materias",$('#materias').val());
-          informacion.append("grupo_sel",$("#grupo").chosen().val());
-          informacion.append("titulo",$('#titulo').val());
-          informacion.append("incluir_archivo",$('#archivo').is(':checked'));
-          informacion.append("contenido",CKEDITOR.instances['editor1'].getData());
+                        $("#progres_bar").show();    
+            var archivo = document.getElementById("file");
+            var informacion = new FormData();
+              informacion.append("archivo", archivo.files[0]);
+              informacion.append("carrera",$('#cod_carrera').val());
+              informacion.append("docente",$('#docente').val());
+              informacion.append("materias",$('#materias').val());
+              informacion.append("grupo_sel",$("#grupo").chosen().val());
+              informacion.append("titulo",$('#titulo').val());
+              informacion.append("incluir_archivo",$('#archivo').is(':checked'));
+              informacion.append("contenido",CKEDITOR.instances['editor1'].getData());
+              informacion.append("nombre_archivo",'');
 
-          var peticion = crearPeticion();
-          if(peticion == null){
-            alert("Tu navegador no es compatible");
-            return;
-          }
-          peticion.addEventListener("load", function() {
-            $("#barra" ).removeClass("bg-info").addClass("bg-success");
-            $('#barra').attr('aria-valuenow', '100%').css('width','100%');
-            $('#barra').html('100%');
+              var peticion = crearPeticion();
+              if(peticion == null){
+                alert("Tu navegador no es compatible");
+                return;
+              }
+              peticion.addEventListener("load", function() {
+                $("#barra" ).removeClass("bg-info").addClass("bg-success");
+                $('#barra').attr('aria-valuenow', '100%').css('width','100%');
+                $('#barra').html('100%');
 
-          });
-          peticion.upload.addEventListener("progress", function(e) {
-            var p = Math.round((e.loaded/e.total)*100);
-            $('#barra').attr('aria-valuenow', p+'%').css('width',p+'%');
-            $('#barra').html(p+'%');
-          });
-          peticion.addEventListener("error", function() {
-            alert("Error al subir el archivo");
-          });
-          peticion.addEventListener("abort", function() {
-            alert("La subida se aborto, por favor intenta de nuevo");
-          });
-          peticion.open("POST",baseurl+"material/material/subir");
-          peticion.send(informacion);    
-          peticion.onreadystatechange = function() {
-
-                // readyState es 4
-                if (peticion.readyState == 4 ) {
-                    var data = peticion.responseText ;
-                    if(data=='exito')
-                        registro_exito();                    
-                    else
-                        registro_no_exito();
-                    console.log(data);
-                }
-            }                
-        }, 500); 
+              });
+              peticion.upload.addEventListener("progress", function(e) {
+                var p = Math.round((e.loaded/e.total)*100);
+                $('#barra').attr('aria-valuenow', p+'%').css('width',p+'%');
+                $('#barra').html(p+'%');
+              });
+              peticion.addEventListener("error", function() {
+                alert("Error al subir el archivo");
+              });
+              peticion.addEventListener("abort", function() {
+                alert("La subida se aborto, por favor intenta de nuevo");
+              });
+              peticion.open("POST",baseurl+"material/material/subir");
+              peticion.send(informacion);    
+              peticion.onreadystatechange = function() {
+                    // readyState es 4
+                    if (peticion.readyState == 4 ) {
+                        var data = peticion.responseText ;
+                        if(data=='exito')
+                            registro_exito();                    
+                        else
+                            registro_no_exito();
+                        console.log(data);
+                    }
+                }                
+            }, 500); 
+        }
     }
     else
     {
-        $.post(baseurl+"material/material/subir",
+        cargar_sin_archivo('');
+    }
+});
+function cargar_sin_archivo(archivo) {
+     $.post(baseurl+"material/material/subir",
         {   
             carrera:$('#cod_carrera').val(),
             docente:$('#docente').val(),
             materias:$('#materias').val(),
             grupo_sel:$("#grupo").chosen().val(),
             titulo:$('#titulo').val(),
-            incluir_archivo:$('#archivo').is(':checked'),
+            incluir_archivo:'false',
             contenido:CKEDITOR.instances['editor1'].getData(),           
+            nombre_archivo:archivo,
         }, 
         function(data){
             if(data=='exito')
@@ -472,35 +522,119 @@ $('#btn_registrar').click(function () {
             else
                 registro_no_exito();                    
         }); 
-    }
-});
+}
 $('#modificar').click(function () {
-    
     if(validar())
-        modificar_comunicado();
+        modificar_material();
 });
-function modificar_comunicado() {
-    $.post(baseurl+"Comunicados/modificar",
-    {   
-        titulo:$('#titulo').val(),
-        carrera:$('#cod_carrera').val(),
-        select_poblacion:$('#select_poblacion').val(),
-        grupo_sel:$(".standardSelect").chosen().val(),
-        fecha_ini:$('#fecha_ini').val(),
-        fecha_fin:$('#fecha_fin').val(),
-        contenido:CKEDITOR.instances['editor1'].getData(),
-        habilitado:$('#habilitado').prop('checked'),
-        id:id_sel,
-        prioridad:$('#prioridad').val(),
-    }, 
-    function(data){
-        if(data=='exito')
+function modificar_material() {
+    $("#progres_bar").hide();    
+    mensajes('registrando');                     
+
+    if($('#archivo').is(':checked'))
+    {
+        if (($("#file")[0].files.length == 0)&&($("#leyenda_files").val().length > 0))
         {
-            mensajes('exito');
+            modificar_sin_archivo($("#leyenda_files").val());
+
         }
         else
-            mensajes('no_exito');                     
-    });    
+        if(conservar)
+        {
+            archivo = document.getElementById("file");
+            modificar_sin_archivo(archivo.files[0].name);
+        }
+        else
+        {
+            $("#barra" ).removeClass("bg-success").addClass("bg-info");
+                $('#barra').attr('aria-valuenow', '0%').css('width','0%');
+                $('#barra').html('0%');
+                $("#contenido_mensages").attr("class","alert alert-info text-center");
+                    $('#contenido_mensages').html(mensage.registrando);
+                    $('#modalTitle').html('Registrando datos');
+                    $("#btn_registrar").attr('disabled',true);    
+            setTimeout (function () {
+
+                        $("#progres_bar").show();    
+            var archivo = document.getElementById("file");
+            var informacion = new FormData();
+              informacion.append("archivo", archivo.files[0]);
+              informacion.append("carrera",$('#cod_carrera').val());
+              informacion.append("docente",$('#docente').val());
+              informacion.append("materias",$('#materias').val());
+              informacion.append("grupo_sel",$("#grupo").chosen().val());
+              informacion.append("titulo",$('#titulo').val());
+              informacion.append("incluir_archivo",$('#archivo').is(':checked'));
+              informacion.append("contenido",CKEDITOR.instances['editor1'].getData());
+              informacion.append("nombre_archivo",'');
+              informacion.append("id",id_sel);
+
+              var peticion = crearPeticion();
+              if(peticion == null){
+                alert("Tu navegador no es compatible");
+                return;
+              }
+              peticion.addEventListener("load", function() {
+                $("#barra" ).removeClass("bg-info").addClass("bg-success");
+                $('#barra').attr('aria-valuenow', '100%').css('width','100%');
+                $('#barra').html('100%');
+
+              });
+              peticion.upload.addEventListener("progress", function(e) {
+                var p = Math.round((e.loaded/e.total)*100);
+                $('#barra').attr('aria-valuenow', p+'%').css('width',p+'%');
+                $('#barra').html(p+'%');
+              });
+              peticion.addEventListener("error", function() {
+                alert("Error al subir el archivo");
+              });
+              peticion.addEventListener("abort", function() {
+                alert("La subida se aborto, por favor intenta de nuevo");
+              });
+              peticion.open("POST",baseurl+"material/material/modificar");
+              peticion.send(informacion);    
+              peticion.onreadystatechange = function() {
+
+                    // readyState es 4
+                    if (peticion.readyState == 4 ) {
+                        var data = peticion.responseText ;
+                        if(data=='exito')
+                            registro_exito();                    
+                        else
+                            registro_no_exito();
+                        console.log(data);
+                    }
+                }                
+            }, 500); 
+        }
+
+
+        
+    }
+    else
+    {
+        modificar_sin_archivo('');
+    }    
+}
+function modificar_sin_archivo(archivo) {
+     $.post(baseurl+"material/material/modificar",
+        {   
+            carrera:$('#cod_carrera').val(),
+            docente:$('#docente').val(),
+            materias:$('#materias').val(),
+            grupo_sel:$("#grupo").chosen().val(),
+            titulo:$('#titulo').val(),
+            incluir_archivo:'false',
+            contenido:CKEDITOR.instances['editor1'].getData(),           
+            nombre_archivo:archivo,
+            id:id_sel,
+        }, 
+        function(data){
+            if(data=='exito')
+                registro_exito();                    
+            else
+                registro_no_exito();                    
+        }); 
 }
 $('#btn_ver_lista').click(function () {
     $(location).attr('href',baseurl+'/material/material/lista');
@@ -530,13 +664,17 @@ mensage = {
     seguro_registrar  : '<h1><span class="fa fa-question"></span></h1><span class="text-left"> Está seguro de querer registrar este Material Académico?</span>',
     registrando  : '<h1><span class="fa fa-spinner fa-spin"></span></h1><span class="text-left"> Espere por favor, se están registrando los datos</span>',
     archivogrande  : '<h1><span class="fa fa-exclamation-triangle"></span></h1><span class="text-left"> El archivo que intenta subir, es demasiado grande, el tamaño máximo es de 128 MB.</span>',
+    archivoexiste  : '<h1><span class="fa fa-exclamation-triangle"></span></h1><span class="text-left"> El archivo que intenta subir ya existe. Desea reemplazarlo o utilizar el mismo.</span>',
     };
 function mensajes(tipo, data) {
     $("#btn_cancelar").hide();
+    $("#btn_cancelar2").hide();
     $("#btn_continuar").hide();
     $("#btn_ver_lista").hide();    
     $("#btn_registrar").hide();    
     $("#progres_bar").hide();    
+    $("#btn_reemplazar").hide();    
+    $("#btn_conservar").hide();    
     if(tipo=='alerta_error')
     {
         $("#contenido_mensages").attr("class","alert alert-warning text-center");
@@ -583,9 +721,10 @@ function mensajes(tipo, data) {
         $("#contenido_mensages").attr("class","alert alert-warning text-center");
         $('#contenido_mensages').html(mensage.registrando);
                 $('#modalTitle').html('Registrando datos');
-                $("#progres_bar").show();    
+                // $("#progres_bar").show();    
                 $("#btn_registrar").attr('disabled',true);    
-                $("#btn_cancelar").show();
+                // $("#btn_cancelar").show();
+
     }
     if(tipo=='archivogrande')
     {
@@ -595,6 +734,15 @@ function mensajes(tipo, data) {
                 // $("#progres_bar").show();    
                 // $("#btn_registrar").attr('disabled',true);    
                 $("#btn_cancelar").show();
+    }
+    if(tipo=='archivoexiste')
+    {
+        $("#contenido_mensages").attr("class","alert alert-warning text-center");
+        $('#contenido_mensages').html(mensage.archivoexiste);
+                $('#modalTitle').html('Archivo existe');
+                $("#btn_cancelar2").show();
+                $("#btn_reemplazar").show();    
+                $("#btn_conservar").show();    
     }
     $('#btn_mensaje').click();    
  }

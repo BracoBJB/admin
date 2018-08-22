@@ -14,7 +14,7 @@ class Comunicados extends CI_Controller
 		}
 		$usuario=$this->session->userdata('username');
 		$data= array('titulo'=> 'Lista de Comunicados');
-			$onload='onload="get_lista()"';
+			$onload='onload=""';
 
 		$this->load->view("head",$data);
 		$data= array('user'=> $usuario,'onLoad'=>$onload);
@@ -23,40 +23,45 @@ class Comunicados extends CI_Controller
 		$this->load->view("comunicados/lista_comunicados");
 		$this->load->view("footer");
 	}	
+	// public function get_lista2()
+	// {
+	// 	$resultado='';
+	// 	$get_lista=$this->consultas->get_lista_avisos();
+	// 	if($get_lista!=null)
+	// 		foreach ($get_lista ->result() as $fila) {
+	// 			$get_poblacion=$this->consultas->get_aviso_poblacion($fila->id_aviso);
+	// 			$poblacion='';
+	// 			if($get_poblacion!=null)
+	// 				foreach ($get_poblacion ->result() as $row) {
+	// 				$poblacion.=$row->item.'<br>';
+	// 				}
+	// 				$estado='checked';
+	// 			if($fila->habilitado=='f')
+	// 				$estado='';
+	// 			$fecha_nueva= explode("-", $fila->fecha_ini);
+ //                $fecha_ini=$fecha_nueva[2].'/'.$fecha_nueva[1].'/'.$fecha_nueva[0];
+ //                $fecha_nueva= explode("-", $fila->fecha_fin);
+ //                $fecha_fin=$fecha_nueva[2].'/'.$fecha_nueva[1].'/'.$fecha_nueva[0];
+	// 			$resultado.='<tr id="'.$fila->id_aviso.'">
+	// 	                        <td>'.$fila->id_aviso.'</td>
+	// 	                        <td>'.$fila->titulo.'</td>
+	// 	                        <td>'.$fecha_ini.'</td>
+	// 	                        <td>'.$fecha_fin.'</td>
+	// 							<td>'.$fila->descripcion.'</td>								
+	// 							<td>'.$poblacion.'</td>
+	// 							<td>'.$fila->carrera.'</td>
+	// 							<td>'.$fila->nombre.'</td>
+	// 							<td><label class="switch switch-3d switch-info"><input type="checkbox" class="switch-input" id="habilitado" '.$estado.' disabled><span class="switch-label"></span><span class="switch-handle"></span></label></td>
+	// 							<td nowrap><button class="btn btn-success btn-sm"  onclick=\'edit_comunicado('.$fila->id_aviso.');\'><span class="fa fa-pencil"></span></button>
+	// 								<button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modalMensajes" onclick=\'seguro_del('.$fila->id_aviso.',"'.$fila->titulo.'");\' ><i class="fa fa-times"></i></button></td>
+	// 						</tr>';
+	// 		}
+	// 	echo $resultado;
+	// }
 	public function get_lista()
 	{
-		$resultado='';
 		$get_lista=$this->consultas->get_lista_avisos();
-		if($get_lista!=null)
-			foreach ($get_lista ->result() as $fila) {
-				$get_poblacion=$this->consultas->get_aviso_poblacion($fila->id_aviso);
-				$poblacion='';
-				if($get_poblacion!=null)
-					foreach ($get_poblacion ->result() as $row) {
-					$poblacion.=$row->item.'<br>';
-					}
-					$estado='checked';
-				if($fila->habilitado=='f')
-					$estado='';
-				$fecha_nueva= explode("-", $fila->fecha_ini);
-                $fecha_ini=$fecha_nueva[2].'/'.$fecha_nueva[1].'/'.$fecha_nueva[0];
-                $fecha_nueva= explode("-", $fila->fecha_fin);
-                $fecha_fin=$fecha_nueva[2].'/'.$fecha_nueva[1].'/'.$fecha_nueva[0];
-				$resultado.='<tr id="'.$fila->id_aviso.'">
-		                        <td>'.$fila->id_aviso.'</td>
-		                        <td>'.$fila->titulo.'</td>
-		                        <td>'.$fecha_ini.'</td>
-		                        <td>'.$fecha_fin.'</td>
-								<td>'.$fila->descripcion.'</td>								
-								<td>'.$poblacion.'</td>
-								<td>'.$fila->carrera.'</td>
-								<td>'.$fila->nombre.'</td>
-								<td><label class="switch switch-3d switch-info"><input type="checkbox" class="switch-input" id="habilitado" '.$estado.' disabled><span class="switch-label"></span><span class="switch-handle"></span></label></td>
-								<td nowrap><button class="btn btn-success btn-sm"  onclick=\'edit_comunicado('.$fila->id_aviso.');\'><span class="fa fa-pencil"></span></button>
-									<button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modalMensajes" onclick=\'seguro_del('.$fila->id_aviso.',"'.$fila->titulo.'");\' ><i class="fa fa-times"></i></button></td>
-							</tr>';
-			}
-		echo $resultado;
+		echo json_encode($get_lista);
 	}
 	public function nuevo()
 	{

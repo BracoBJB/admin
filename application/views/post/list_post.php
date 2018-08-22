@@ -30,7 +30,6 @@
                 <tr>
                 <th style="width:5%;background-color:#006699;color: white;">Id</th>
                 <th style="width:15%;background-color:#006699;color: white;">Post</th>
-                
                 <th>Tema</th>
                 <th>Autor(es)</th>
                 

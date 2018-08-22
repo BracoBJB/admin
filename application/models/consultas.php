@@ -77,16 +77,23 @@ class Consultas extends CI_Model
 
 	public function get_lista_avisos()
 	{
-		$sql="SELECT id_aviso, titulo, descripcion, fecha_ini, fecha_fin, habilitado, carrera, est_prioridad.nombre FROM est_avisos INNER JOIN est_prioridad ON est_prioridad.id_prioridad = est_avisos.prioridad ORDER BY est_avisos.fecha_ini DESC";
+		$sql="SELECT est_avisos.id_aviso, titulo, descripcion, fecha_ini, fecha_fin, habilitado, carrera, est_prioridad.nombre,pob.poblacion FROM est_avisos 
+			INNER JOIN est_prioridad ON est_prioridad.id_prioridad = est_avisos.prioridad
+			INNER JOIN (select pp.id_aviso,string_agg(pp.item, ', ') as poblacion
+			from est_avisos_poblacion as pp
+			group by pp.id_aviso) as pob ON pob.id_aviso = est_avisos.id_aviso 
+			ORDER BY est_avisos.fecha_ini DESC";
+		// $sql="SELECT id_aviso, titulo, descripcion, fecha_ini, fecha_fin, habilitado, carrera, est_prioridad.nombre FROM est_avisos INNER JOIN est_prioridad ON est_prioridad.id_prioridad = est_avisos.prioridad ORDER BY est_avisos.fecha_ini DESC";
 		$consulta=$this->db->query($sql);
-		if($consulta->num_rows()>0)
-		{
-			return $consulta;
-		}
-		else
-		{
-			return null;
-		}
+		return $consulta->result();
+		// if($consulta->num_rows()>0)
+		// {
+		// 	return $consulta;
+		// }
+		// else
+		// {
+		// 	return null;
+		// }
 	}
 	public function get_edit_avisos($id)
 	{
@@ -144,16 +151,27 @@ class Consultas extends CI_Model
 	}
 	public function get_lista_material()
 	{
-		$sql="SELECT id_material, gestion, titulo, contenido, cod_docente, nom_archivo, url, carrera, fecha, cod_materia FROM est_material ORDER BY fecha ASC";
+		$sql="SELECT est_material.id_material,gestion, titulo, contenido, nom_archivo, carrera, fecha, cod_materia, apellido_p||' '|| apellido_m||' '|| nombre AS nom_docente, nombre_materia_oficial as nom_materia,pob.poblacion
+			FROM
+			est_material
+			INNER JOIN docente ON docente.cod_docente = est_material.cod_docente
+			INNER JOIN materia ON materia.sigla_materia = est_material.cod_materia AND materia.cod_pensum = est_material.carrera
+			INNER JOIN (select pp.id_material,string_agg(pp.cod_grupo, ', ') as poblacion
+						from est_material_grupo as pp
+						group by pp.id_material) as pob ON pob.id_material = est_material.id_material
+			ORDER BY
+			est_material.fecha ASC";
+		//$sql="SELECT id_material, gestion, titulo, contenido, cod_docente, nom_archivo, url, carrera, fecha, cod_materia FROM est_material ORDER BY fecha ASC";
 		$consulta=$this->db->query($sql);
-		if($consulta->num_rows()>0)
-		{
-			return $consulta;
-		}
-		else
-		{
-			return null;
-		}
+		return $consulta->result();
+		// if($consulta->num_rows()>0)
+		// {
+		// 	return $consulta;
+		// }
+		// else
+		// {
+		// 	return null;
+		// }
 	}
 	public function get_material_grupo($id_material)
 	{
@@ -340,6 +358,15 @@ class Consultas extends CI_Model
 		$consulta = $this->db->get('est_avisos');
 
 		return $consulta->num_rows();
+	}
+	public function get_nom_archivo($id) {
+		$where = array(
+			'id_material' => $id,
+			);
+		$this->db->select('nom_archivo')->where($where);
+		$consulta = $this->db->get('est_material');
+
+		return $consulta->row()->nom_archivo;
 	}
 	public function existe_titulo_material($titulo,$carrera, $gestion) {
 		$where = array(
