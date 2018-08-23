@@ -70,11 +70,39 @@
     </div>
 </div>
 <script >
-    $(document).ready(function(){
-    $('[data-toggle="tooltip"]').tooltip(); 
+
+
+$(document).ready(function(){
+    //$('[data-toggle="tooltip"]').tooltip(); 
+    
+
+    // $("#ttt span").tooltip({
+
+    //     title: 'It works in absence of title attribute.'
+
+    // });
+    /*
+    $("span").tooltip({
+        container:'body',
+        delay: { "show": 3000, "hide": 2000 }
+        });
+        */
+    /*$('[data-toggle="tooltip"]').tooltip({
+        container: 'body'
+
+        });*/
 });
 var baseurl="<?=base_url();?>";
 var table = $('#lista_material').DataTable({
+    "drawCallback": function( settings ) {
+        $('[data-toggle="tooltip"]').tooltip({
+        container:'body'});
+        //$('[data-toggle="tooltip2"]').tooltip();
+        // add a    s many tooltips you want
+    },/*
+    "initComplete": function( settings, json ) {
+        $('[data-toggle="tooltip"]').tooltip({container:'body'}); 
+    },*/
     "language": {
         "url": baseurl +"plantillas/js/spanish.json"
     },
@@ -113,8 +141,8 @@ var table = $('#lista_material').DataTable({
             'targets': [1],
             'data': "titulo",
             'render': function(data,type,row) {
-                return "<span data-toggle='tooltip' data-placement='top' title='Titulo'><i class='fa fa-bookmark-o'></i> &nbsp;"+row.titulo+"</span>"+
-                        "<br><span data-toggle='tooltip' data-placement='top' title='Fecha de Publicación'><i class='fa fa-calendar'></i> &nbsp;"+new_date(row.fecha)+"</span>"+
+                return "<span id='ttt' data-toggle='tooltip' title='Some text'><i class='fa fa-bookmark-o'></i> &nbsp;"+row.titulo+"</span>"+
+                        "<br><span data-toggle='tooltip' title='Disabled tooltip'><i class='fa fa-calendar'></i> &nbsp;"+new_date(row.fecha)+"</span>"+
                         "<br><span data-toggle='tooltip' data-placement='top' title='Docente'><i class='fa fa-user'></i> &nbsp;"+row.nom_docente+"</span>";
             }
         },
@@ -219,4 +247,5 @@ function mensajes(tipo, data1, data2) {
     }
     
  }
+
 </script>

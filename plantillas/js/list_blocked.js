@@ -30,7 +30,7 @@ var table = $('#list_blocked_table').DataTable({
                 if(row.bloqueado == 'f') {
                     return `<button id="btnUnblock" type="button" class="btn btn-danger" data-toggle="modal" data-target="#modalUnblock" onClick="agregarBloqueo(`+row.cod_ceta+`,'`+row.nombre+`')">Bloquear</button>`;
                 } else {
-                    return `<button id="btnUnblock" type="button" class="btn btn-success" data-toggle="modal" data-target="#modalUnblock" onClick="quitarBloqueo(`+row.cod_ceta+`,'`+row.nombre+`')">Quitar</button>`;
+                    return `<button id="btnUnblock" type="button" class="btn btn-success" data-toggle="modal" data-target="#modalUnblock" onClick="quitarBloqueo(`+row.cod_ceta+`,'`+row.nombre+`')">Desbloquear</button>`;
                 }
              }
         },

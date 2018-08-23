@@ -93,7 +93,7 @@
                 }
 
                 addHtml+=`<a class="dropdown-item" style="color:red;" href="#" data-toggle="modal" data-target="#mdl_confirm" onClick="eliminarComentario('`+row.id_comentario+`','`+row.contenido+`')" ><i class="fa fa-times"></i> &nbsp;Eliminar Comentario</a>
-                <a class="dropdown-item" style="color:red;" href="#" data-toggle="modal" data-target="#mdl_confirm" onClick="bannearEstudiante('`+row.cod_ceta+`','`+row.nombre+`')"><i class="fa fa-ban"></i> &nbsp;Banear Usuario</a>
+                <a class="dropdown-item" style="color:red;" href="#" data-toggle="modal" data-target="#mdl_confirm" onClick="bannearEstudiante('`+row.cod_ceta+`','`+row.nombre+`')"><i class="fa fa-ban"></i> &nbsp;Bloquear Usuario</a>
              </div>
            </div>`;
 
@@ -216,9 +216,9 @@ bannearEstudiante = function (cod_ceta,nombre) {
     $('#contenido_mensages').addClass('alert-danger');
     $('#contenido_mensages').html(`
     <h1><span class="fa fa-exclamation-triangle"></span></h1>
-    <span class="text-left"> El Estudiante: <strong>`+nombre+`</strong><br>con codigo: <strong>`+cod_ceta+`</strong> sera banneado.</span>
+    <span class="text-left"> El Estudiante: <strong>`+nombre+`</strong><br>con codigo: <strong>`+cod_ceta+`</strong> no podrá realizar más comentarios.</span>
     `);
-    $('#modalTitle').html('Está seguro de bannear?');
+    $('#modalTitle').html('Está seguro de bloquear?');
 
 
 }
