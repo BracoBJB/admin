@@ -148,7 +148,7 @@
         }
 
     ],
-    "order": [[ 0, "desc" ]]
+    "order": [[ 5, "desc" ]]
 });
 
 $('div.toolbar').html('<b> Custom tool bar! Text/images etc.</b>');

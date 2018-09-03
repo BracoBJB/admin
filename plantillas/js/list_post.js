@@ -80,12 +80,12 @@ var table = $('#list_post_table').DataTable({
                 if(row.activo == 't') {
                     result += "<br><span style='color:green;'><i class='fa fa-check'></i>&nbsp;Activo</span>";
                 } else {
-                    result += "<br><span style='color:red;'><i class='fa fa-times'></i>Activo &nbsp;No Activo</span>";
+                    result += "<br><span style='color:red;'><i class='fa fa-times'></i>&nbsp;No Activo</span>";
                 }
                 if(row.permite_comentario == 't') {
                     result += "<br><span style='color:green;'><i class='fa fa-comments'></i>&nbsp;Permite</span>";
                 } else {
-                    result += "<br><span style='color:green;'><i class='fa fa-comments'></i>&nbsp;No Permite</span>";
+                    result += "<br><span style='color:reed;'><i class='fa fa-comments'></i>&nbsp;No Permite</span>";
                 }
                 return result;
                 
