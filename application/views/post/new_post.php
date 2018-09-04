@@ -135,10 +135,10 @@
 
                         <?php 
                         if (isset($post)) {
-                            echo '<button type="submit" class="btn btn-danger btn-sm" id="btn_cancelar"><i class="fa fa-edit"></i> Cancelar </button>';
+                            echo '<button class="btn btn-danger btn-sm" id="btn_cancelar" onclick="cancelRegPost()"><i class="fa fa-edit"></i> Cancelar </button>';
                         }    
                         else
-                            echo '<button type="submit" class="btn btn-success btn-sm" id="btn_limpiar"><i class="fa fa-refresh"></i> Limpiar </button>';     
+                            echo '<button class="btn btn-success btn-sm" id="btn_limpiar"><i class="fa fa-refresh"></i> Limpiar </button>';     
                         ?>
 
                         <button type="button" class="btn btn-secondary mb-1" data-toggle="modal" data-target="#modalMensajes" id="btn_mensaje" style="display: none;"> <!-- no quitareste botón -->
@@ -174,7 +174,9 @@
 <script >
 
 
-$('#btn_cancelar').click(function () {
+$("#btn_cancelar").click(function(event)
+{
+    event.preventDefault(); // cancel default behavior
     $(location).attr('href',baseurl+'blog/lista');
 });
 
