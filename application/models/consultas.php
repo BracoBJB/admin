@@ -618,7 +618,13 @@ class Consultas extends CI_Model
 
 		$consulta=$this->db->query($sql);
 		return $consulta->result();
+	}
 
+	public function get_fecha_post($id_post) {
+		$sql = "select fecha from est_post
+		where id_post={$id_post}";
+		$consulta=$this->db->query($sql);
+		return $consulta->row()->fecha;
 	}
 }
 

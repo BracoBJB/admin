@@ -135,7 +135,7 @@
 
                         <?php 
                         if (isset($post)) {
-                            echo '<button class="btn btn-danger btn-sm" id="btn_cancelar" onclick="cancelRegPost()"><i class="fa fa-edit"></i> Cancelar </button>';
+                            echo '<button class="btn btn-danger btn-sm" id="btn_cancelar"><i class="fa fa-edit"></i> Cancelar </button>';
                         }    
                         else
                             echo '<button class="btn btn-success btn-sm" id="btn_limpiar"><i class="fa fa-refresh"></i> Limpiar </button>';     

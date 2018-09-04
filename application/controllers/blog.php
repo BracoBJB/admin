@@ -175,6 +175,7 @@ class Blog extends CI_Controller
 			if($is_new_post) {
 				$success = $this->consultas->insert_table('est_post',$data);
 			}else {
+				$data['fecha'] = $this->consultas->get_fecha_post($id_post_modificar);
 				$success = $this->consultas->update_table('est_post',$data,'id_post='.$id_post_modificar);
 			}
 			//$sql = $this->db->set($data)->get_compiled_insert('entrada');
